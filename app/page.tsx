@@ -1,7 +1,8 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ExpenseList } from '@/components/expense-list';
@@ -23,10 +24,22 @@ const COLORS = {
 };
 
 export default function HomePage() {
-  const { expenses, getExpensesByMonth } = useExpenseStore();
+  const router = useRouter();
+  const { expenses, getExpensesByMonth, userSettings } = useExpenseStore();
+  const [isReady, setIsReady] = useState(false);
   const currentMonth = getCurrentMonth();
   const lastMonth = getLastMonth();
 
+  useEffect(() => {
+    // 온보딩 완료 여부 확인
+    if (!userSettings.onboardingCompleted) {
+      router.replace('/onboarding');
+    } else {
+      setIsReady(true);
+    }
+  }, [userSettings.onboardingCompleted, router]);
+
+  // 모든 hooks는 조건부 리턴 전에 호출되어야 함
   const stats = useMemo(() => {
     const currentMonthExpenses = getExpensesByMonth(currentMonth);
     const lastMonthExpenses = getExpensesByMonth(lastMonth);
@@ -88,6 +101,15 @@ export default function HomePage() {
     }
     return data;
   }, [stats.verdictCounts]);
+
+  // 온보딩 체크 중에는 로딩 표시
+  if (!isReady) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-pulse text-muted-foreground">로딩 중...</div>
+      </div>
+    );
+  }
 
   return (
     <>

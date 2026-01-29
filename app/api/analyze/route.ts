@@ -1,117 +1,236 @@
 import { NextRequest, NextResponse } from 'next/server';
-import type { Expense, Verdict } from '@/lib/types';
+import type { Expense, Verdict, UserSettings, SubCategory, Category, Priority } from '@/lib/types';
+import {
+  SUB_CATEGORY_KEYWORDS,
+  SUB_CATEGORY_FREQUENCY_LIMIT,
+  CATEGORY_BUDGET_RATIO,
+  PRIORITY_RULES,
+} from '@/lib/types';
 
-// 임시 규칙 기반 판단 로직 (추후 AI API로 교체 예정)
-function analyzeExpense(expense: Expense): { verdict: Verdict; reason: string } {
+interface AnalyzeRequest {
+  expense: Expense;
+  userSettings: UserSettings;
+  monthlyStats: {
+    subCategoryCounts: Record<SubCategory, number>;
+    categoryTotals: Record<Category, number>;
+    totalSpent: number;
+    remainingDays: number;
+  };
+}
+
+// 메모에서 세부 카테고리 추출
+function detectSubCategory(memo: string): SubCategory {
+  const lowerMemo = memo.toLowerCase();
+
+  for (const [subCategory, keywords] of Object.entries(SUB_CATEGORY_KEYWORDS)) {
+    if (subCategory === '일반') continue;
+    for (const keyword of keywords) {
+      if (lowerMemo.includes(keyword.toLowerCase())) {
+        return subCategory as SubCategory;
+      }
+    }
+  }
+
+  return '일반';
+}
+
+// 일일 예산 계산
+function calculateDailyBudget(
+  monthlyIncome: number,
+  savingsGoal: number,
+  totalSpent: number,
+  remainingDays: number
+): number {
+  const availableBudget = monthlyIncome - savingsGoal;
+  const remainingBudget = availableBudget - totalSpent;
+  return remainingDays > 0 ? remainingBudget / remainingDays : 0;
+}
+
+// 우선순위 매칭 확인
+function checkPriorityMatch(
+  category: Category,
+  memo: string,
+  priorities: Priority[]
+): { matched: boolean; priority: Priority | null; reason: string } {
+  const lowerMemo = memo.toLowerCase();
+
+  for (const priority of priorities) {
+    // 실용/필수 우선은 완화 없음
+    if (priority === '실용/필수 우선') continue;
+
+    const rule = PRIORITY_RULES[priority];
+
+    // 카테고리 매칭 확인
+    const categoryMatched = rule.categories.includes(category);
+
+    // 키워드 매칭 확인
+    const keywordMatched = rule.keywords.some((keyword) =>
+      lowerMemo.includes(keyword.toLowerCase())
+    );
+
+    if (categoryMatched || keywordMatched) {
+      return {
+        matched: true,
+        priority,
+        reason: `'${priority}' 우선순위에 부합하는 ${rule.description}입니다.`,
+      };
+    }
+  }
+
+  return { matched: false, priority: null, reason: '' };
+}
+
+// 실용/필수 우선 모드 체크
+function isStrictMode(priorities: Priority[]): boolean {
+  return priorities.includes('실용/필수 우선');
+}
+
+function analyzeExpense(
+  expense: Expense,
+  userSettings: UserSettings,
+  monthlyStats: AnalyzeRequest['monthlyStats']
+): { verdict: Verdict; reason: string; subCategory: SubCategory } {
   const { category, amount, memo } = expense;
+  const { monthlyIncome, savingsGoal, essentialCategories, priorities } = userSettings;
+  const { subCategoryCounts, categoryTotals, totalSpent, remainingDays } = monthlyStats;
 
-  // 필수 지출 카테고리
-  const essentialCategories = ['의료', '교육', '주거', '교통'];
+  // 세부 카테고리 판별
+  const subCategory = detectSubCategory(memo);
+
+  // 1. 필수 지출 카테고리 체크 (무조건 무죄)
   if (essentialCategories.includes(category)) {
     return {
       verdict: 'good',
-      reason: `${category}은(는) 생활에 필요한 필수 지출입니다.`,
+      reason: `${category}은(는) 필수 지출로 설정되어 있습니다.`,
+      subCategory,
     };
   }
 
-  // 금액 기준 판단
-  if (category === '식비') {
-    if (amount <= 10000) {
+  // 2. 우선순위 매칭 확인
+  const priorityMatch = checkPriorityMatch(category, memo, priorities);
+  const strictMode = isStrictMode(priorities);
+
+  const reasons: string[] = [];
+  let isBad = false;
+  let violationCount = 0;
+
+  // 3. 고액 지출: 월 수익의 5% 초과 (우선순위 매칭 시 7%로 완화)
+  const highExpenseRatio = priorityMatch.matched && !strictMode ? 0.07 : 0.05;
+  const highExpenseThreshold = monthlyIncome * highExpenseRatio;
+  if (amount > highExpenseThreshold) {
+    violationCount++;
+    reasons.push(
+      `고액 지출입니다. (월 수입의 ${Math.round(highExpenseRatio * 100)}%인 ${highExpenseThreshold.toLocaleString()}원 초과)`
+    );
+  }
+
+  // 4. 세부 카테고리 빈도 초과 체크 (실용/필수 모드는 80%로 강화)
+  if (subCategory !== '일반') {
+    const currentCount = subCategoryCounts[subCategory] || 0;
+    let limit = SUB_CATEGORY_FREQUENCY_LIMIT[subCategory];
+
+    // 실용/필수 모드는 빈도 제한 강화
+    if (strictMode) {
+      limit = Math.floor(limit * 0.8);
+    }
+
+    if (currentCount >= limit) {
+      violationCount++;
+      reasons.push(
+        `${subCategory} 빈도 초과입니다. (월 ${limit}회 제한, 현재 ${currentCount + 1}회)`
+      );
+    }
+  }
+
+  // 5. 카테고리별 월 예산 초과 체크 (우선순위 매칭 시 +5% 완화)
+  let budgetRatio = CATEGORY_BUDGET_RATIO[category];
+  if (budgetRatio) {
+    // 우선순위 매칭 시 예산 비율 완화
+    if (priorityMatch.matched && !strictMode) {
+      budgetRatio += 5;
+    }
+    // 실용/필수 모드는 예산 비율 강화
+    if (strictMode) {
+      budgetRatio = Math.floor(budgetRatio * 0.8);
+    }
+
+    const categoryBudget = monthlyIncome * (budgetRatio / 100);
+    const currentCategoryTotal = categoryTotals[category] || 0;
+    if (currentCategoryTotal + amount > categoryBudget) {
+      violationCount++;
+      reasons.push(
+        `${category} 월 예산 초과입니다. (예산: ${categoryBudget.toLocaleString()}원, 현재+이번: ${(currentCategoryTotal + amount).toLocaleString()}원)`
+      );
+    }
+  }
+
+  // 6. 목표 위험: 남은 일수가 7일 이상인데 일일 예산의 3배 초과 (우선순위 매칭 시 4배로 완화)
+  if (remainingDays >= 7) {
+    const dailyBudget = calculateDailyBudget(
+      monthlyIncome,
+      savingsGoal,
+      totalSpent,
+      remainingDays
+    );
+    const multiplier = priorityMatch.matched && !strictMode ? 4 : 3;
+    if (dailyBudget > 0 && amount > dailyBudget * multiplier) {
+      violationCount++;
+      reasons.push(
+        `저축 목표 위험! 일일 예산(${Math.round(dailyBudget).toLocaleString()}원)의 ${multiplier}배를 초과했습니다.`
+      );
+    }
+  }
+
+  // 판정 로직
+  // 우선순위 매칭 + 1개 위반만 있으면 neutral로 완화
+  if (priorityMatch.matched && !strictMode) {
+    if (violationCount === 0) {
       return {
         verdict: 'good',
-        reason: '합리적인 식비 지출입니다.',
+        reason: `이 소비는 ${category} 카테고리로, ${priorityMatch.reason}`,
+        subCategory,
       };
-    } else if (amount <= 30000) {
+    } else if (violationCount === 1) {
       return {
         verdict: 'neutral',
-        reason: '적정 수준의 식비입니다. 자주 반복되면 주의가 필요합니다.',
+        reason: `${priorityMatch.reason} 하지만 ${reasons.join(' ')}`,
+        subCategory,
       };
     } else {
-      return {
-        verdict: 'bad',
-        reason: '높은 금액의 식비입니다. 외식이나 배달 빈도를 줄여보세요.',
-      };
+      isBad = true;
     }
-  }
-
-  if (category === '쇼핑') {
-    if (amount <= 30000) {
-      return {
-        verdict: 'neutral',
-        reason: '소소한 쇼핑입니다.',
-      };
-    } else {
-      // 메모에 '필요', '필수' 등이 있으면 neutral로 판단
-      if (memo && (memo.includes('필요') || memo.includes('필수'))) {
-        return {
-          verdict: 'neutral',
-          reason: '필요한 물품 구매로 보입니다.',
-        };
-      }
-      return {
-        verdict: 'bad',
-        reason: '충동 구매가 아닌지 다시 생각해보세요. 정말 필요한 물건인가요?',
-      };
-    }
-  }
-
-  if (category === '문화/여가') {
-    if (amount <= 20000) {
-      return {
-        verdict: 'good',
-        reason: '적절한 여가 활동 비용입니다. 정신 건강에 좋습니다.',
-      };
-    } else if (amount <= 50000) {
-      return {
-        verdict: 'neutral',
-        reason: '여가 활동에 적당한 투자입니다.',
-      };
-    } else {
-      return {
-        verdict: 'bad',
-        reason: '과도한 여가 비용입니다. 더 저렴한 대안을 찾아보세요.',
-      };
-    }
-  }
-
-  // 기타 카테고리는 금액으로만 판단
-  if (amount <= 10000) {
-    return {
-      verdict: 'neutral',
-      reason: '소액 지출입니다.',
-    };
-  } else if (amount <= 50000) {
-    return {
-      verdict: 'neutral',
-      reason: '일반적인 지출 범위입니다.',
-    };
   } else {
+    isBad = violationCount > 0;
+  }
+
+  if (isBad) {
     return {
       verdict: 'bad',
-      reason: '큰 금액의 지출입니다. 정말 필요한 지출인지 고민해보세요.',
+      reason: reasons.join(' '),
+      subCategory,
     };
   }
+
+  // 괜찮은 소비
+  return {
+    verdict: 'neutral',
+    reason: '적정 범위 내의 지출입니다.',
+    subCategory,
+  };
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const expense: Expense = await request.json();
+    const body: AnalyzeRequest = await request.json();
+    const { expense, userSettings, monthlyStats } = body;
 
-    // TODO: 실제 AI API 연동 시 이 부분을 교체
-    // const aiResponse = await fetch('https://ai-api.example.com/analyze', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify(expense),
-    // });
-    // const result = await aiResponse.json();
-
-    const result = analyzeExpense(expense);
+    const result = analyzeExpense(expense, userSettings, monthlyStats);
 
     return NextResponse.json(result);
   } catch (error) {
     console.error('Analysis error:', error);
     return NextResponse.json(
-      { verdict: 'neutral', reason: '분석 중 오류가 발생했습니다.' },
+      { verdict: 'neutral', reason: '분석 중 오류가 발생했습니다.', subCategory: '일반' },
       { status: 500 }
     );
   }

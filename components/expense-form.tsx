@@ -20,8 +20,8 @@ import {
 } from '@/components/ui/popover';
 import { Card, CardContent } from '@/components/ui/card';
 import { useExpenseStore } from '@/lib/store';
-import { CATEGORIES, type Category, type Expense } from '@/lib/types';
-import { generateId, cn } from '@/lib/utils';
+import { CATEGORIES, type Category, type Expense, type SubCategory } from '@/lib/types';
+import { generateId, cn, getCurrentMonth, getRemainingDaysInMonth } from '@/lib/utils';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 
@@ -32,7 +32,14 @@ interface ExpenseFormProps {
 
 export function ExpenseForm({ expense, onSuccess }: ExpenseFormProps) {
   const router = useRouter();
-  const { addExpense, updateExpense } = useExpenseStore();
+  const {
+    addExpense,
+    updateExpense,
+    userSettings,
+    getExpensesByMonth,
+    getSubCategoryCountInMonth,
+    getCategoryTotalInMonth,
+  } = useExpenseStore();
   const isEditing = !!expense;
 
   const [date, setDate] = useState<Date>(
@@ -59,20 +66,56 @@ export function ExpenseForm({ expense, onSuccess }: ExpenseFormProps) {
       memo,
       verdict: expense?.verdict,
       reason: expense?.reason,
+      subCategory: expense?.subCategory,
       createdAt: expense?.createdAt || new Date().toISOString(),
     };
 
     if (analyze) {
       setIsAnalyzing(true);
       try {
+        const currentMonth = getCurrentMonth();
+        const monthlyExpenses = getExpensesByMonth(currentMonth);
+        const totalSpent = monthlyExpenses.reduce((sum, e) => sum + e.amount, 0);
+
+        // 세부 카테고리별 카운트 집계
+        const subCategoryCounts: Record<SubCategory, number> = {
+          '외식': getSubCategoryCountInMonth(currentMonth, '외식'),
+          '커피': getSubCategoryCountInMonth(currentMonth, '커피'),
+          '술': getSubCategoryCountInMonth(currentMonth, '술'),
+          '배달음식': getSubCategoryCountInMonth(currentMonth, '배달음식'),
+          '일반': getSubCategoryCountInMonth(currentMonth, '일반'),
+        };
+
+        // 카테고리별 총액 집계
+        const categoryTotals: Record<Category, number> = {
+          '식비': getCategoryTotalInMonth(currentMonth, '식비'),
+          '교통': getCategoryTotalInMonth(currentMonth, '교통'),
+          '쇼핑': getCategoryTotalInMonth(currentMonth, '쇼핑'),
+          '문화/여가': getCategoryTotalInMonth(currentMonth, '문화/여가'),
+          '의료': getCategoryTotalInMonth(currentMonth, '의료'),
+          '교육': getCategoryTotalInMonth(currentMonth, '교육'),
+          '주거': getCategoryTotalInMonth(currentMonth, '주거'),
+          '기타': getCategoryTotalInMonth(currentMonth, '기타'),
+        };
+
         const response = await fetch('/api/analyze', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(expenseData),
+          body: JSON.stringify({
+            expense: expenseData,
+            userSettings,
+            monthlyStats: {
+              subCategoryCounts,
+              categoryTotals,
+              totalSpent,
+              remainingDays: getRemainingDaysInMonth(),
+            },
+          }),
         });
         const result = await response.json();
         expenseData.verdict = result.verdict;
         expenseData.reason = result.reason;
+        expenseData.subCategory = result.subCategory;
       } catch (error) {
         console.error('Analysis failed:', error);
       } finally {

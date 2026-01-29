@@ -35,3 +35,9 @@ export function getLastMonth(): string {
   now.setMonth(now.getMonth() - 1);
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
 }
+
+export function getRemainingDaysInMonth(): number {
+  const now = new Date();
+  const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+  return lastDay - now.getDate() + 1; // 오늘 포함
+}
