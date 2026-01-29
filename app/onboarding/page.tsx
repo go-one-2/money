@@ -1,23 +1,19 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useExpenseStore } from '@/lib/store';
-import {
-  PRIORITIES,
-  PRIORITY_DESCRIPTIONS,
-  type Priority,
-} from '@/lib/types';
-import { cn } from '@/lib/utils';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useExpenseStore } from "@/lib/store";
+import { PRIORITIES, PRIORITY_DESCRIPTIONS, type Priority } from "@/lib/types";
+import { cn } from "@/lib/utils";
 
-type Step = 'welcome' | 'income' | 'savings' | 'priorities' | 'complete';
+type Step = "welcome" | "income" | "savings" | "priorities" | "complete";
 
 // 픽셀 구름 컴포넌트
 function PixelCloud({ className }: { className?: string }) {
   return (
     <svg
       viewBox="0 0 64 40"
-      className={cn('w-16 h-10', className)}
+      className={cn("w-16 h-10", className)}
       fill="currentColor"
     >
       <rect x="20" y="8" width="8" height="8" />
@@ -43,7 +39,7 @@ function PixelHouse({ className }: { className?: string }) {
   return (
     <svg
       viewBox="0 0 48 48"
-      className={cn('w-12 h-12', className)}
+      className={cn("w-12 h-12", className)}
       fill="currentColor"
     >
       <rect x="20" y="4" width="8" height="8" fill="#c8e600" />
@@ -80,9 +76,9 @@ export default function OnboardingPage() {
   const router = useRouter();
   const { updateUserSettings } = useExpenseStore();
 
-  const [step, setStep] = useState<Step>('welcome');
-  const [monthlyIncome, setMonthlyIncome] = useState('');
-  const [savingsGoal, setSavingsGoal] = useState('');
+  const [step, setStep] = useState<Step>("welcome");
+  const [monthlyIncome, setMonthlyIncome] = useState("");
+  const [savingsGoal, setSavingsGoal] = useState("");
   const [selectedPriorities, setSelectedPriorities] = useState<Priority[]>([]);
 
   const togglePriority = (priority: Priority) => {
@@ -98,14 +94,14 @@ export default function OnboardingPage() {
   };
 
   const handleNext = () => {
-    if (step === 'welcome') {
-      setStep('income');
-    } else if (step === 'income') {
-      setStep('savings');
-    } else if (step === 'savings') {
-      setStep('priorities');
-    } else if (step === 'priorities') {
-      setStep('complete');
+    if (step === "welcome") {
+      setStep("income");
+    } else if (step === "income") {
+      setStep("savings");
+    } else if (step === "savings") {
+      setStep("priorities");
+    } else if (step === "priorities") {
+      setStep("complete");
     }
   };
 
@@ -116,14 +112,14 @@ export default function OnboardingPage() {
       priorities: selectedPriorities,
       onboardingCompleted: true,
     });
-    router.push('/');
+    router.push("/");
   };
 
   const handleSkip = () => {
     updateUserSettings({
       onboardingCompleted: true,
     });
-    router.push('/');
+    router.push("/");
   };
 
   return (
@@ -134,34 +130,39 @@ export default function OnboardingPage() {
       <div className="absolute top-8 right-8 text-white/20 pixel-float">
         <PixelCloud />
       </div>
-      <div className="absolute top-24 left-12 text-white/10 pixel-float" style={{ animationDelay: '1s' }}>
+      <div
+        className="absolute top-24 left-12 text-white/10 pixel-float"
+        style={{ animationDelay: "1s" }}
+      >
         <PixelCloud />
       </div>
 
       <div className="min-h-screen flex flex-col justify-center px-6 py-12 max-w-md mx-auto relative z-10">
-
         {/* Welcome */}
-        {step === 'welcome' && (
+        {step === "welcome" && (
           <div className="space-y-8">
             <div className="text-[var(--pixel-lime)] text-sm tracking-wider">
               ※ 안녕 HELLO
             </div>
             <h1 className="text-5xl font-bold leading-tight">
-              소비<br />판단!
+              소비
+              <br />
+              판단!
             </h1>
 
             <div className="flex items-end gap-4 my-8">
               <div className="text-white/40 pixel-float">
                 <PixelCloud />
               </div>
-              <div className="pixel-float" style={{ animationDelay: '0.5s' }}>
+              <div className="pixel-float" style={{ animationDelay: "0.5s" }}>
                 <PixelHouse />
               </div>
             </div>
 
             <div className="pixel-bubble text-black">
               <p className="text-lg">
-                당신의 소비를 판단해드릴게요.<br />
+                당신의 소비를 판단해드릴게요.
+                <br />
                 잘한 소비인지, 못한 소비인지!
               </p>
             </div>
@@ -176,13 +177,15 @@ export default function OnboardingPage() {
         )}
 
         {/* Income */}
-        {step === 'income' && (
+        {step === "income" && (
           <div className="space-y-6">
             <div className="text-[var(--pixel-lime)] text-sm">「 01 」</div>
 
             <div className="pixel-bubble text-black">
               <p className="text-lg font-bold mb-1">월 수입이 얼마인가요?</p>
-              <p className="text-sm text-gray-600">세후 실수령액을 알려주세요</p>
+              <p className="text-sm text-gray-600">
+                세후 실수령액을 알려주세요
+              </p>
             </div>
 
             <div className="my-8 flex justify-center">
@@ -207,10 +210,7 @@ export default function OnboardingPage() {
             </div>
 
             <div className="flex gap-3 pt-4">
-              <button
-                className="pixel-btn flex-1"
-                onClick={handleSkip}
-              >
+              <button className="pixel-btn flex-1" onClick={handleSkip}>
                 건너뛰기
               </button>
               <button
@@ -225,17 +225,19 @@ export default function OnboardingPage() {
         )}
 
         {/* Savings */}
-        {step === 'savings' && (
+        {step === "savings" && (
           <div className="space-y-6">
             <div className="text-[var(--pixel-lime)] text-sm">「 02 」</div>
 
             <div className="pixel-bubble text-black">
-              <p className="text-lg font-bold mb-1">매달 얼마를 모으고 싶으세요?</p>
+              <p className="text-lg font-bold mb-1">
+                매달 얼마를 모으고 싶으세요?
+              </p>
               <p className="text-sm text-gray-600">저축 목표를 설정해주세요</p>
             </div>
 
             <div className="my-6 flex justify-end">
-              <div className="pixel-float" style={{ animationDelay: '0.3s' }}>
+              <div className="pixel-float" style={{ animationDelay: "0.3s" }}>
                 <PixelHouse className="text-white/30" />
               </div>
             </div>
@@ -257,14 +259,18 @@ export default function OnboardingPage() {
 
             {monthlyIncome && savingsGoal && (
               <div className="text-[var(--pixel-lime)] text-center py-2">
-                사용 가능: 월 {(parseInt(monthlyIncome, 10) - parseInt(savingsGoal, 10)).toLocaleString()}원
+                사용 가능: 월{" "}
+                {(
+                  parseInt(monthlyIncome, 10) - parseInt(savingsGoal, 10)
+                ).toLocaleString()}
+                원
               </div>
             )}
 
             <div className="flex gap-3 pt-4">
               <button
                 className="pixel-btn flex-1"
-                onClick={() => setStep('income')}
+                onClick={() => setStep("income")}
               >
                 이전
               </button>
@@ -280,19 +286,22 @@ export default function OnboardingPage() {
         )}
 
         {/* Priorities */}
-        {step === 'priorities' && (
+        {step === "priorities" && (
           <div className="space-y-6">
             <div className="text-[var(--pixel-lime)] text-sm">「 03 」</div>
 
             <div className="pixel-bubble text-black">
-              <p className="text-lg font-bold mb-1">어떨 때 돈이 아깝지 않나요?</p>
+              <p className="text-lg font-bold mb-1">
+                어떨 때 돈이 아깝지 않나요?
+              </p>
               <p className="text-sm text-gray-600">최대 3개까지 선택 가능</p>
             </div>
 
             <div className="space-y-3 my-4">
               {PRIORITIES.map((priority) => {
                 const isSelected = selectedPriorities.includes(priority);
-                const isDisabled = !isSelected && selectedPriorities.length >= 3;
+                const isDisabled =
+                  !isSelected && selectedPriorities.length >= 3;
 
                 return (
                   <button
@@ -300,16 +309,17 @@ export default function OnboardingPage() {
                     onClick={() => !isDisabled && togglePriority(priority)}
                     disabled={isDisabled}
                     className={cn(
-                      'w-full p-4 text-left transition-all border-3 flex items-center gap-3',
-                      'border-white/20 bg-white/5',
-                      isSelected && 'border-[var(--pixel-lime)] bg-[var(--pixel-lime)]/10',
-                      isDisabled && 'opacity-40 cursor-not-allowed'
+                      "w-full p-4 text-left transition-all border-3 flex items-center gap-3",
+                      "border-white/20 bg-white/5",
+                      isSelected &&
+                        "border-[var(--pixel-lime)] bg-[var(--pixel-lime)]/10",
+                      isDisabled && "opacity-40 cursor-not-allowed",
                     )}
                   >
                     <div
                       className={cn(
-                        'pixel-checkbox flex-shrink-0',
-                        isSelected && 'checked'
+                        "pixel-checkbox flex-shrink-0",
+                        isSelected && "checked",
                       )}
                     >
                       {isSelected && (
@@ -330,7 +340,7 @@ export default function OnboardingPage() {
             <div className="flex gap-3 pt-2">
               <button
                 className="pixel-btn flex-1"
-                onClick={() => setStep('savings')}
+                onClick={() => setStep("savings")}
               >
                 이전
               </button>
@@ -345,17 +355,20 @@ export default function OnboardingPage() {
         )}
 
         {/* Complete */}
-        {step === 'complete' && (
+        {step === "complete" && (
           <div className="space-y-6">
             <div className="text-center mb-8">
               <div className="inline-flex gap-4 mb-6">
                 <div className="text-[var(--pixel-lime)] pixel-float">
                   <PixelCloud />
                 </div>
-                <div className="pixel-float" style={{ animationDelay: '0.5s' }}>
+                <div className="pixel-float" style={{ animationDelay: "0.5s" }}>
                   <PixelHouse className="text-white" />
                 </div>
-                <div className="text-[var(--pixel-lime)] pixel-float" style={{ animationDelay: '1s' }}>
+                <div
+                  className="text-[var(--pixel-lime)] pixel-float"
+                  style={{ animationDelay: "1s" }}
+                >
                   <PixelCloud />
                 </div>
               </div>
@@ -378,7 +391,10 @@ export default function OnboardingPage() {
               <div className="flex justify-between">
                 <span className="text-gray-600">사용 가능</span>
                 <span className="font-bold text-[#7ab800]">
-                  {(parseInt(monthlyIncome, 10) - parseInt(savingsGoal, 10)).toLocaleString()}원
+                  {(
+                    parseInt(monthlyIncome, 10) - parseInt(savingsGoal, 10)
+                  ).toLocaleString()}
+                  원
                 </span>
               </div>
               {selectedPriorities.length > 0 && (
@@ -411,7 +427,10 @@ export default function OnboardingPage() {
       {/* 하단 픽셀 장식 */}
       <div className="absolute bottom-0 left-0 right-0 h-16 flex items-end">
         <div className="flex w-full">
-          {[24, 16, 32, 8, 40, 20, 12, 36, 28, 16, 44, 20, 8, 32, 24, 40, 12, 28, 16, 36].map((h, i) => (
+          {[
+            24, 16, 32, 8, 40, 20, 12, 36, 28, 16, 44, 20, 8, 32, 24, 40, 12,
+            28, 16, 36,
+          ].map((h, i) => (
             <div
               key={i}
               className="flex-1 bg-white/5"

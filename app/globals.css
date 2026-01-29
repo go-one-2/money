@@ -126,8 +126,9 @@
 
 /* Pixel Art Style */
 @font-face {
-  font-family: 'DungGeunMo';
-  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/DungGeunMo.woff') format('woff');
+  font-family: "DungGeunMo";
+  src: url("https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/DungGeunMo.woff")
+    format("woff");
   font-weight: normal;
   font-style: normal;
 }
@@ -135,7 +136,7 @@
 .pixel-theme {
   --pixel-lime: #c8e600;
   --pixel-bg: #0a0a0a;
-  font-family: 'DungGeunMo', monospace;
+  font-family: "DungGeunMo", monospace;
 }
 
 .pixel-bubble {
@@ -147,7 +148,7 @@
 }
 
 .pixel-bubble::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: -12px;
   left: 24px;
@@ -167,7 +168,7 @@
     radial-gradient(circle at 50% 50%, white 16px, transparent 16px),
     radial-gradient(circle at 70% 70%, white 12px, transparent 12px),
     radial-gradient(circle at 50% 80%, white 14px, transparent 14px);
-  filter: url('#halftone');
+  filter: url("#halftone");
 }
 
 .halftone-pattern {
@@ -179,7 +180,7 @@
   background: white;
   color: #0a0a0a;
   border: 3px solid #0a0a0a;
-  font-family: 'DungGeunMo', monospace;
+  font-family: "DungGeunMo", monospace;
   padding: 12px 24px;
   font-size: 16px;
   cursor: pointer;
@@ -204,7 +205,7 @@
 .pixel-input {
   background: white;
   border: 3px solid #0a0a0a;
-  font-family: 'DungGeunMo', monospace;
+  font-family: "DungGeunMo", monospace;
   padding: 12px 16px;
   font-size: 18px;
   outline: none;
@@ -237,8 +238,13 @@
 }
 
 @keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
 }
 
 .pixel-float {
