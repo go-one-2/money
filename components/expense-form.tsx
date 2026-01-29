@@ -218,20 +218,14 @@ export function ExpenseForm({ expense, onSuccess }: ExpenseFormProps) {
           />
         </div>
 
-        <div className="flex gap-2 pt-2">
+        <div className="pt-2">
           <Button
-            variant="outline"
-            className="flex-1"
-            onClick={() => handleSubmit(false)}
-          >
-            {isEditing ? '수정' : '저장'}
-          </Button>
-          <Button
-            className="flex-1"
+            className="w-full"
+            size="lg"
             onClick={() => handleSubmit(true)}
             disabled={isAnalyzing}
           >
-            {isAnalyzing ? '분석 중...' : 'AI 분석 후 저장'}
+            {isAnalyzing ? '판결 중...' : '판결하기'}
           </Button>
         </div>
       </CardContent>
