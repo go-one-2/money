@@ -126,7 +126,7 @@ export function ExpenseForm({ expense, onSuccess }: ExpenseFormProps) {
   return (
     <div className="pixel-card p-4 space-y-4">
       <div className="space-y-2">
-        <label className="text-sm font-medium">날짜</label>
+        <label className="text-sm font-medium pixel-font">날짜</label>
         <Popover>
           <PopoverTrigger asChild>
             <button
@@ -167,7 +167,7 @@ export function ExpenseForm({ expense, onSuccess }: ExpenseFormProps) {
       </div>
 
       <div className="space-y-2">
-        <label className="text-sm font-medium">금액</label>
+        <label className="text-sm font-medium pixel-font">금액</label>
         <input
           type="number"
           placeholder="금액을 입력하세요"
@@ -179,7 +179,7 @@ export function ExpenseForm({ expense, onSuccess }: ExpenseFormProps) {
       </div>
 
       <div className="space-y-2">
-        <label className="text-sm font-medium">카테고리</label>
+        <label className="text-sm font-medium pixel-font">카테고리</label>
         <select
           value={category}
           onChange={(e) => setCategory(e.target.value as Category)}
@@ -195,7 +195,7 @@ export function ExpenseForm({ expense, onSuccess }: ExpenseFormProps) {
       </div>
 
       <div className="space-y-2">
-        <label className="text-sm font-medium">메모</label>
+        <label className="text-sm font-medium pixel-font">메모</label>
         <textarea
           placeholder="메모를 입력하세요 (선택)"
           value={memo}

@@ -43,7 +43,7 @@ export function ExpenseCard({
               <span className={cn('pixel-badge', verdict.className)}>{verdict.label}</span>
             )}
           </div>
-          <p className="font-semibold text-lg">
+          <p className="font-semibold text-lg pixel-font">
             {formatCurrency(expense.amount)}
           </p>
           {expense.memo && (

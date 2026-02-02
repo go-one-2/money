@@ -112,12 +112,12 @@ export default function HomePage() {
       <main className="container px-4 py-6 max-w-md mx-auto">
         <div className="pixel-card p-4 mb-4">
           <div className="pb-2">
-            <h3 className="text-sm font-medium text-destructive">
+            <h3 className="text-sm font-medium text-destructive pixel-font">
               이번 달 잘못한 소비
             </h3>
           </div>
           <div>
-            <p className="text-3xl font-bold text-destructive">
+            <p className="text-3xl font-bold text-destructive pixel-font">
               {formatCurrency(stats.currentBadTotal)}
             </p>
             <p className="text-sm text-muted-foreground mt-1">
@@ -140,7 +140,7 @@ export default function HomePage() {
         {chartData.length > 0 && (
           <div className="pixel-card p-4 mb-4">
             <div className="pb-2">
-              <h3 className="text-sm font-medium">소비 분포</h3>
+              <h3 className="text-sm font-medium pixel-font">소비 분포</h3>
             </div>
             <div>
               <div className="h-48">
@@ -177,7 +177,7 @@ export default function HomePage() {
         )}
 
         <div className="flex items-center justify-between mb-3">
-          <h2 className="font-semibold text-foreground">최근 소비</h2>
+          <h2 className="font-semibold text-foreground pixel-font">최근 소비</h2>
           <Link href="/history">
             <button className="pixel-btn text-sm py-2 px-4">
               더보기

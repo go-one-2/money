@@ -66,7 +66,7 @@ export default function HistoryPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center pixel-dialog-overlay">
           <div className="pixel-dialog max-w-md w-full mx-4 p-4">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold">소비 수정</h2>
+              <h2 className="text-lg font-semibold pixel-font">소비 수정</h2>
               <button
                 onClick={() => setEditingExpense(null)}
                 className="text-muted-foreground hover:text-card-foreground text-xl"

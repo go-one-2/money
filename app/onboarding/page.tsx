@@ -144,7 +144,7 @@ export default function OnboardingPage() {
             <div className="text-[var(--pixel-lime)] text-sm tracking-wider">
               ※ 안녕 HELLO
             </div>
-            <h1 className="text-5xl font-bold leading-tight">
+            <h1 className="text-5xl font-bold leading-tight pixel-font">
               소비
               <br />
               판단!

@@ -76,7 +76,7 @@ export default function SettingsPage() {
       <main className="container px-4 py-6 max-w-md mx-auto space-y-4">
         <div className="pixel-card p-4">
           <div className="pb-3">
-            <h3 className="text-base font-medium">월 수입</h3>
+            <h3 className="text-base font-medium pixel-font">월 수입</h3>
           </div>
           <div>
             <div className="relative">
@@ -100,7 +100,7 @@ export default function SettingsPage() {
 
         <div className="pixel-card p-4">
           <div className="pb-3">
-            <h3 className="text-base font-medium">월 저축 목표</h3>
+            <h3 className="text-base font-medium pixel-font">월 저축 목표</h3>
           </div>
           <div>
             <div className="relative">
@@ -129,7 +129,7 @@ export default function SettingsPage() {
 
         <div className="pixel-card p-4">
           <div className="pb-3">
-            <h3 className="text-base font-medium">소비 우선순위</h3>
+            <h3 className="text-base font-medium pixel-font">소비 우선순위</h3>
           </div>
           <div>
             <p className="text-xs text-muted-foreground mb-3">
@@ -195,7 +195,7 @@ export default function SettingsPage() {
 
         <div className="pixel-card p-4">
           <div className="pb-3">
-            <h3 className="text-base font-medium">필수 지출 카테고리</h3>
+            <h3 className="text-base font-medium pixel-font">필수 지출 카테고리</h3>
           </div>
           <div>
             <p className="text-xs text-muted-foreground mb-3">
@@ -225,7 +225,7 @@ export default function SettingsPage() {
 
         <div className="pixel-card p-4">
           <div className="pb-3">
-            <h3 className="text-base font-medium">유죄 판정 기준</h3>
+            <h3 className="text-base font-medium pixel-font">유죄 판정 기준</h3>
           </div>
           <div className="space-y-3">
             <div className="text-sm space-y-2">

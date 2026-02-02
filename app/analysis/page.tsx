@@ -144,12 +144,12 @@ export default function AnalysisPage() {
       <main className="container px-4 py-6 max-w-md mx-auto">
         <div className="pixel-card p-4 mb-4">
           <div className="pb-2">
-            <h3 className="text-sm font-medium">개선 목표 달성률</h3>
+            <h3 className="text-sm font-medium pixel-font">개선 목표 달성률</h3>
           </div>
           <div>
             <div className="flex items-center justify-between">
               <div>
-                <p className={`text-2xl font-bold ${improvementRate >= 0 ? 'text-primary' : 'text-destructive'}`}>
+                <p className={`text-2xl font-bold pixel-font ${improvementRate >= 0 ? 'text-primary' : 'text-destructive'}`}>
                   {improvementRate >= 0 ? '+' : ''}
                   {improvementRate.toFixed(1)}%
                 </p>
@@ -166,7 +166,7 @@ export default function AnalysisPage() {
 
         <div className="pixel-card p-4 mb-4">
           <div className="pb-2">
-            <h3 className="text-sm font-medium">
+            <h3 className="text-sm font-medium pixel-font">
               주간 못한 소비 트렌드
             </h3>
           </div>
@@ -202,7 +202,7 @@ export default function AnalysisPage() {
 
         <div className="pixel-card p-4 mb-4">
           <div className="pb-2">
-            <h3 className="text-sm font-medium">
+            <h3 className="text-sm font-medium pixel-font">
               카테고리별 못한 소비 분포
             </h3>
           </div>
@@ -246,7 +246,7 @@ export default function AnalysisPage() {
 
         <div className="pixel-card p-4 mb-4">
           <div className="pb-2">
-            <h3 className="text-sm font-medium">월별 소비 비교</h3>
+            <h3 className="text-sm font-medium pixel-font">월별 소비 비교</h3>
           </div>
           <div>
             {monthlyComparison.some((m) => m.잘한소비 > 0 || m.못한소비 > 0) ? (
