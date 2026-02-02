@@ -2,23 +2,12 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { Card, CardContent } from '@/components/ui/card';
 import { useExpenseStore } from '@/lib/store';
 import { CATEGORIES, type Category, type Expense, type SubCategory } from '@/lib/types';
 import { generateId, cn, getCurrentMonth, getRemainingDaysInMonth } from '@/lib/utils';
@@ -77,7 +66,6 @@ export function ExpenseForm({ expense, onSuccess }: ExpenseFormProps) {
         const monthlyExpenses = getExpensesByMonth(currentMonth);
         const totalSpent = monthlyExpenses.reduce((sum, e) => sum + e.amount, 0);
 
-        // 세부 카테고리별 카운트 집계
         const subCategoryCounts: Record<SubCategory, number> = {
           '외식': getSubCategoryCountInMonth(currentMonth, '외식'),
           '커피': getSubCategoryCountInMonth(currentMonth, '커피'),
@@ -86,7 +74,6 @@ export function ExpenseForm({ expense, onSuccess }: ExpenseFormProps) {
           '일반': getSubCategoryCountInMonth(currentMonth, '일반'),
         };
 
-        // 카테고리별 총액 집계
         const categoryTotals: Record<Category, number> = {
           '식비': getCategoryTotalInMonth(currentMonth, '식비'),
           '교통': getCategoryTotalInMonth(currentMonth, '교통'),
@@ -137,98 +124,96 @@ export function ExpenseForm({ expense, onSuccess }: ExpenseFormProps) {
   };
 
   return (
-    <Card>
-      <CardContent className="p-4 space-y-4">
-        <div className="space-y-2">
-          <label className="text-sm font-medium">날짜</label>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className={cn(
-                  'w-full justify-start text-left font-normal',
-                  !date && 'text-muted-foreground'
-                )}
+    <div className="pixel-card p-4 space-y-4">
+      <div className="space-y-2">
+        <label className="text-sm font-medium">날짜</label>
+        <Popover>
+          <PopoverTrigger asChild>
+            <button
+              className={cn(
+                'pixel-btn w-full justify-start text-left font-normal flex items-center',
+                !date && 'text-muted-foreground'
+              )}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="square"
+                strokeLinejoin="miter"
+                className="mr-2"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="mr-2"
-                >
-                  <path d="M8 2v4" />
-                  <path d="M16 2v4" />
-                  <rect width="18" height="18" x="3" y="4" rx="2" />
-                  <path d="M3 10h18" />
-                </svg>
-                {date ? format(date, 'PPP', { locale: ko }) : '날짜를 선택하세요'}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="single"
-                selected={date}
-                onSelect={(d) => d && setDate(d)}
-                initialFocus
-              />
-            </PopoverContent>
-          </Popover>
-        </div>
+                <path d="M8 2v4" />
+                <path d="M16 2v4" />
+                <rect width="18" height="18" x="3" y="4" rx="0" />
+                <path d="M3 10h18" />
+              </svg>
+              {date ? format(date, 'PPP', { locale: ko }) : '날짜를 선택하세요'}
+            </button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0 pixel-popover" align="start">
+            <Calendar
+              mode="single"
+              selected={date}
+              onSelect={(d) => d && setDate(d)}
+              initialFocus
+            />
+          </PopoverContent>
+        </Popover>
+      </div>
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium">금액</label>
-          <Input
-            type="number"
-            placeholder="금액을 입력하세요"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            inputMode="numeric"
-          />
-        </div>
+      <div className="space-y-2">
+        <label className="text-sm font-medium">금액</label>
+        <input
+          type="number"
+          placeholder="금액을 입력하세요"
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+          inputMode="numeric"
+          className="pixel-input w-full"
+        />
+      </div>
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium">카테고리</label>
-          <Select value={category} onValueChange={(v) => setCategory(v as Category)}>
-            <SelectTrigger>
-              <SelectValue placeholder="카테고리를 선택하세요" />
-            </SelectTrigger>
-            <SelectContent>
-              {CATEGORIES.map((cat) => (
-                <SelectItem key={cat} value={cat}>
-                  {cat}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+      <div className="space-y-2">
+        <label className="text-sm font-medium">카테고리</label>
+        <select
+          value={category}
+          onChange={(e) => setCategory(e.target.value as Category)}
+          className="pixel-select w-full"
+        >
+          <option value="">카테고리를 선택하세요</option>
+          {CATEGORIES.map((cat) => (
+            <option key={cat} value={cat}>
+              {cat}
+            </option>
+          ))}
+        </select>
+      </div>
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium">메모</label>
-          <Textarea
-            placeholder="메모를 입력하세요 (선택)"
-            value={memo}
-            onChange={(e) => setMemo(e.target.value)}
-            rows={3}
-          />
-        </div>
+      <div className="space-y-2">
+        <label className="text-sm font-medium">메모</label>
+        <textarea
+          placeholder="메모를 입력하세요 (선택)"
+          value={memo}
+          onChange={(e) => setMemo(e.target.value)}
+          rows={3}
+          className="pixel-textarea w-full"
+        />
+      </div>
 
-        <div className="pt-2">
-          <Button
-            className="w-full"
-            size="lg"
-            onClick={() => handleSubmit(true)}
-            disabled={isAnalyzing}
-          >
-            {isAnalyzing ? '판결 중...' : '판결하기'}
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+      <div className="pt-2">
+        <button
+          className="w-full pixel-btn pixel-btn-lime"
+          onClick={() => handleSubmit(true)}
+          disabled={isAnalyzing}
+        >
+          {isAnalyzing ? '판결 중...' : '판결하기'}
+        </button>
+      </div>
+    </div>
   );
 }

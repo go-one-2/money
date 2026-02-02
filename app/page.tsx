@@ -3,8 +3,6 @@
 import { useMemo, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { ExpenseList } from '@/components/expense-list';
 import { Header } from '@/components/header';
 import { useExpenseStore } from '@/lib/store';
@@ -18,9 +16,9 @@ import {
 } from 'recharts';
 
 const COLORS = {
-  good: '#22c55e',
-  bad: '#ef4444',
-  neutral: '#9ca3af',
+  good: 'var(--pixel-lime)',
+  bad: 'var(--pixel-red)',
+  neutral: 'var(--pixel-gray)',
 };
 
 export default function HomePage() {
@@ -31,7 +29,6 @@ export default function HomePage() {
   const lastMonth = getLastMonth();
 
   useEffect(() => {
-    // 온보딩 완료 여부 확인
     if (!userSettings.onboardingCompleted) {
       router.replace('/onboarding');
     } else {
@@ -39,7 +36,6 @@ export default function HomePage() {
     }
   }, [userSettings.onboardingCompleted, router]);
 
-  // 모든 hooks는 조건부 리턴 전에 호출되어야 함
   const stats = useMemo(() => {
     const currentMonthExpenses = getExpensesByMonth(currentMonth);
     const lastMonthExpenses = getExpensesByMonth(lastMonth);
@@ -102,11 +98,10 @@ export default function HomePage() {
     return data;
   }, [stats.verdictCounts]);
 
-  // 온보딩 체크 중에는 로딩 표시
   if (!isReady) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-pulse text-muted-foreground">로딩 중...</div>
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="animate-pulse text-primary">로딩 중...</div>
       </div>
     );
   }
@@ -115,14 +110,14 @@ export default function HomePage() {
     <>
       <Header title="소비 판단" />
       <main className="container px-4 py-6 max-w-md mx-auto">
-        <Card className="mb-4 bg-gradient-to-br from-red-50 to-orange-50 border-red-100">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-red-800">
+        <div className="pixel-card p-4 mb-4">
+          <div className="pb-2">
+            <h3 className="text-sm font-medium text-destructive">
               이번 달 잘못한 소비
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold text-red-600">
+            </h3>
+          </div>
+          <div>
+            <p className="text-3xl font-bold text-destructive">
               {formatCurrency(stats.currentBadTotal)}
             </p>
             <p className="text-sm text-muted-foreground mt-1">
@@ -131,7 +126,7 @@ export default function HomePage() {
             {stats.improvement !== 0 && (
               <p
                 className={`text-sm mt-2 ${
-                  stats.improvement > 0 ? 'text-green-600' : 'text-red-600'
+                  stats.improvement > 0 ? 'text-primary' : 'text-destructive'
                 }`}
               >
                 {stats.improvement > 0 ? '↓' : '↑'} 지난 달 대비{' '}
@@ -139,15 +134,15 @@ export default function HomePage() {
                 {stats.improvement > 0 ? '감소' : '증가'}
               </p>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {chartData.length > 0 && (
-          <Card className="mb-4">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">소비 분포</CardTitle>
-            </CardHeader>
-            <CardContent>
+          <div className="pixel-card p-4 mb-4">
+            <div className="pb-2">
+              <h3 className="text-sm font-medium">소비 분포</h3>
+            </div>
+            <div>
               <div className="h-48">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
@@ -177,30 +172,28 @@ export default function HomePage() {
                   </PieChart>
                 </ResponsiveContainer>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         )}
 
         <div className="flex items-center justify-between mb-3">
-          <h2 className="font-semibold">최근 소비</h2>
+          <h2 className="font-semibold text-foreground">최근 소비</h2>
           <Link href="/history">
-            <Button variant="ghost" size="sm">
+            <button className="pixel-btn text-sm py-2 px-4">
               더보기
-            </Button>
+            </button>
           </Link>
         </div>
 
         {recentExpenses.length > 0 ? (
           <ExpenseList expenses={recentExpenses} />
         ) : (
-          <Card>
-            <CardContent className="py-8 text-center text-muted-foreground">
-              <p className="mb-4">아직 소비 내역이 없습니다.</p>
-              <Link href="/add">
-                <Button>첫 소비 기록하기</Button>
-              </Link>
-            </CardContent>
-          </Card>
+          <div className="pixel-card p-8 text-center">
+            <p className="mb-4 text-muted-foreground">아직 소비 내역이 없습니다.</p>
+            <Link href="/add">
+              <button className="pixel-btn pixel-btn-lime">첫 소비 기록하기</button>
+            </Link>
+          </div>
         )}
       </main>
     </>

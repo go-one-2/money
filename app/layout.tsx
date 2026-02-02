@@ -29,7 +29,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  themeColor: '#ffffff',
+  themeColor: '#0a0a0a',
 };
 
 export default function RootLayout({
@@ -40,7 +40,7 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased pixel-theme bg-background`}
       >
         <div className="min-h-screen pb-20">
           {children}

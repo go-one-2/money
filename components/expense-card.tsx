@@ -1,8 +1,5 @@
 'use client';
 
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import type { Expense } from '@/lib/types';
 import { formatCurrency, formatDate, cn } from '@/lib/utils';
 
@@ -16,15 +13,15 @@ interface ExpenseCardProps {
 const verdictConfig = {
   good: {
     label: '잘한 소비',
-    className: 'bg-green-100 text-green-800 hover:bg-green-100',
+    className: 'pixel-badge-lime',
   },
   bad: {
     label: '못한 소비',
-    className: 'bg-red-100 text-red-800 hover:bg-red-100',
+    className: 'pixel-badge-red',
   },
   neutral: {
     label: '보통',
-    className: 'bg-gray-100 text-gray-800 hover:bg-gray-100',
+    className: 'pixel-badge-gray',
   },
 };
 
@@ -37,58 +34,53 @@ export function ExpenseCard({
   const verdict = expense.verdict ? verdictConfig[expense.verdict] : null;
 
   return (
-    <Card className="mb-3">
-      <CardContent className="p-4">
-        <div className="flex items-start justify-between">
-          <div className="flex-1">
-            <div className="flex items-center gap-2 mb-1">
-              <Badge variant="outline">{expense.category}</Badge>
-              {verdict && (
-                <Badge className={verdict.className}>{verdict.label}</Badge>
-              )}
-            </div>
-            <p className="font-semibold text-lg">
-              {formatCurrency(expense.amount)}
-            </p>
-            {expense.memo && (
-              <p className="text-sm text-muted-foreground mt-1">
-                {expense.memo}
-              </p>
+    <div className="pixel-card mb-3 p-4">
+      <div className="flex items-start justify-between">
+        <div className="flex-1">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="pixel-badge">{expense.category}</span>
+            {verdict && (
+              <span className={cn('pixel-badge', verdict.className)}>{verdict.label}</span>
             )}
-            {expense.reason && (
-              <p className="text-xs text-muted-foreground mt-2 p-2 bg-muted rounded">
-                {expense.reason}
-              </p>
-            )}
-            <p className="text-xs text-muted-foreground mt-2">
-              {formatDate(expense.date)}
-            </p>
           </div>
-          {showActions && (
-            <div className="flex gap-1 ml-2">
-              {onEdit && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onEdit(expense)}
-                >
-                  수정
-                </Button>
-              )}
-              {onDelete && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-destructive hover:text-destructive"
-                  onClick={() => onDelete(expense.id)}
-                >
-                  삭제
-                </Button>
-              )}
-            </div>
+          <p className="font-semibold text-lg">
+            {formatCurrency(expense.amount)}
+          </p>
+          {expense.memo && (
+            <p className="text-sm text-muted-foreground mt-1">
+              {expense.memo}
+            </p>
           )}
+          {expense.reason && (
+            <p className="text-xs text-muted-foreground mt-2 p-2 bg-muted border-2 border-muted">
+              {expense.reason}
+            </p>
+          )}
+          <p className="text-xs text-muted-foreground mt-2">
+            {formatDate(expense.date)}
+          </p>
         </div>
-      </CardContent>
-    </Card>
+        {showActions && (
+          <div className="flex gap-1 ml-2">
+            {onEdit && (
+              <button
+                className="pixel-btn text-xs py-1 px-2"
+                onClick={() => onEdit(expense)}
+              >
+                수정
+              </button>
+            )}
+            {onDelete && (
+              <button
+                className="pixel-btn text-xs py-1 px-2 text-destructive"
+                onClick={() => onDelete(expense.id)}
+              >
+                삭제
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
   );
 }

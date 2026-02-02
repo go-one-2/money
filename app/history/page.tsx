@@ -4,19 +4,6 @@ import { useState, useMemo } from 'react';
 import { Header } from '@/components/header';
 import { ExpenseList } from '@/components/expense-list';
 import { ExpenseForm } from '@/components/expense-form';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
 import { useExpenseStore } from '@/lib/store';
 import { CATEGORIES, type Category, type Expense } from '@/lib/types';
 
@@ -52,19 +39,18 @@ export default function HistoryPage() {
       <Header title="소비 내역" />
       <main className="container px-4 py-6 max-w-md mx-auto">
         <div className="mb-4">
-          <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-            <SelectTrigger>
-              <SelectValue placeholder="카테고리 필터" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">전체</SelectItem>
-              {CATEGORIES.map((cat) => (
-                <SelectItem key={cat} value={cat}>
-                  {cat}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <select
+            value={categoryFilter}
+            onChange={(e) => setCategoryFilter(e.target.value)}
+            className="pixel-select w-full"
+          >
+            <option value="all">전체</option>
+            {CATEGORIES.map((cat) => (
+              <option key={cat} value={cat}>
+                {cat}
+              </option>
+            ))}
+          </select>
         </div>
 
         <ExpenseList
@@ -76,19 +62,25 @@ export default function HistoryPage() {
         />
       </main>
 
-      <Dialog open={!!editingExpense} onOpenChange={() => setEditingExpense(null)}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>소비 수정</DialogTitle>
-          </DialogHeader>
-          {editingExpense && (
+      {editingExpense && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center pixel-dialog-overlay">
+          <div className="pixel-dialog max-w-md w-full mx-4 p-4">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold">소비 수정</h2>
+              <button
+                onClick={() => setEditingExpense(null)}
+                className="text-muted-foreground hover:text-card-foreground text-xl"
+              >
+                ✕
+              </button>
+            </div>
             <ExpenseForm
               expense={editingExpense}
               onSuccess={() => setEditingExpense(null)}
             />
-          )}
-        </DialogContent>
-      </Dialog>
+          </div>
+        </div>
+      )}
     </>
   );
 }
