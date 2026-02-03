@@ -52,9 +52,9 @@
   /* Pixel Theme Colors */
   --pixel-bg: #0a0a0a;
   --pixel-card: #ffffff;
-  --pixel-card-dark: #1a1a1a;
+  --pixel-card-dark: #2f2f2f;
   --pixel-border: #0a0a0a;
-  --pixel-border-light: #444444;
+  --pixel-border-light: #272727;
   --pixel-lime: #c8e600;
   --pixel-red: #ff4444;
   --pixel-muted: #555555;
@@ -138,6 +138,14 @@
   body {
     @apply bg-background text-foreground;
   }
+  h2 {
+    @apply text-2xl font-semibold;
+    font-family: "DungGeunMo", monospace;
+  }
+  h3 {
+    @apply text-lg font-medium;
+    font-family: "DungGeunMo", monospace;
+  }
 }
 
 /* Fonts */
@@ -182,7 +190,12 @@
 }
 
 .pixel-theme {
-  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  font-family:
+    "Pretendard",
+    -apple-system,
+    BlinkMacSystemFont,
+    system-ui,
+    sans-serif;
 }
 
 /* Pixel font for titles and emphasis */
@@ -215,15 +228,31 @@
   width: 60px;
   height: 36px;
   background:
-    radial-gradient(circle at 30% 70%, var(--pixel-card) 12px, transparent 12px),
-    radial-gradient(circle at 50% 50%, var(--pixel-card) 16px, transparent 16px),
-    radial-gradient(circle at 70% 70%, var(--pixel-card) 12px, transparent 12px),
+    radial-gradient(
+      circle at 30% 70%,
+      var(--pixel-card) 12px,
+      transparent 12px
+    ),
+    radial-gradient(
+      circle at 50% 50%,
+      var(--pixel-card) 16px,
+      transparent 16px
+    ),
+    radial-gradient(
+      circle at 70% 70%,
+      var(--pixel-card) 12px,
+      transparent 12px
+    ),
     radial-gradient(circle at 50% 80%, var(--pixel-card) 14px, transparent 14px);
   filter: url("#halftone");
 }
 
 .halftone-pattern {
-  background-image: radial-gradient(circle, var(--pixel-muted) 1px, transparent 1px);
+  background-image: radial-gradient(
+    circle,
+    var(--pixel-muted) 1px,
+    transparent 1px
+  );
   background-size: 4px 4px;
 }
 
@@ -285,7 +314,7 @@
 
 .pixel-card-dark {
   background: var(--pixel-card-dark);
-  border: 3px solid var(--pixel-border-light);
+  /* border: 1px solid var(--pixel-border-light); */
   color: var(--pixel-card);
 }
 
@@ -310,7 +339,7 @@
   border: 2px solid var(--pixel-border);
   font-family: "DungGeunMo", monospace;
   padding: 4px 8px;
-  font-size: 11px;
+  font-size: 12px;
   color: var(--pixel-border);
   display: inline-block;
 }

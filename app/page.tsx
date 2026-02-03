@@ -104,11 +104,9 @@ export default function HomePage() {
     <>
       <Header title="소비 판단" />
       <main className="container px-4 py-6 max-w-md mx-auto">
-        <div className="pixel-card p-4 mb-4">
+        <div className="pixel-card-dark p-4 mb-4">
           <div className="pb-2">
-            <h3 className="text-sm font-medium text-destructive pixel-font">
-              이번 달 잘못한 소비
-            </h3>
+            <h3>이번 달 잘못한 소비</h3>
           </div>
           <div>
             <p className="text-3xl font-bold text-destructive pixel-font">
@@ -132,22 +130,23 @@ export default function HomePage() {
         </div>
 
         {chartData.length > 0 && (
-          <div className="pixel-card p-4 mb-4">
+          <div className="pixel-card-dark p-4 mb-4">
             <div className="pb-2">
-              <h3 className="text-sm font-medium pixel-font">소비 분포</h3>
+              <h3>소비 분포</h3>
             </div>
             <div>
               <div className="h-48">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
-                      data={chartData}
                       cx="50%"
                       cy="50%"
+                      data={chartData}
+                      dataKey="value"
                       innerRadius={40}
                       outerRadius={70}
                       paddingAngle={2}
-                      dataKey="value"
+                      stroke="none"
                     >
                       {chartData.map((entry, index) => (
                         <Cell
@@ -162,7 +161,15 @@ export default function HomePage() {
                         />
                       ))}
                     </Pie>
-                    <Legend />
+                    <Legend
+                      iconSize={6}
+                      iconType="circle"
+                      wrapperStyle={{
+                        fontSize: 12,
+                        fontWeight: 700,
+                        marginRight: 22,
+                      }}
+                    />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
@@ -171,11 +178,13 @@ export default function HomePage() {
         )}
 
         <div className="flex items-center justify-between mb-3">
-          <h2 className="font-semibold text-foreground pixel-font">
-            최근 소비
-          </h2>
+          <h3>최근 소비</h3>
           <Link href="/history">
-            <Button variant="pixel-ghost" size="sm">
+            <Button
+              className="text-foreground hover:text-primary hover:bg-transparent"
+              variant="pixel-ghost"
+              size="sm"
+            >
               더보기
             </Button>
           </Link>
@@ -184,7 +193,7 @@ export default function HomePage() {
         {recentExpenses.length > 0 ? (
           <ExpenseList expenses={recentExpenses} />
         ) : (
-          <div className="pixel-card p-8 text-center">
+          <div className="pixel-card-dark p-8 text-center">
             <p className="mb-4 text-muted-foreground">
               아직 소비 내역이 없습니다.
             </p>
