@@ -67,7 +67,9 @@ export default function HomePage() {
   }, [currentMonth, lastMonth, getExpensesByMonth]);
 
   const recentExpenses = useMemo(() => {
-    return expenses.slice(0, 5);
+    return [...expenses]
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+      .slice(0, 5);
   }, [expenses]);
 
   if (!userSettings.onboardingCompleted) {
@@ -81,7 +83,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen flex flex-col">
       {/* 상단 컬러 영역 */}
-      <div className="bg-primary text-primary-foreground px-6 py-8">
+      <div className="bg-primary text-background px-6 py-8">
         <p className=" font-bold mb-2">이번 달 전체 소비</p>
 
         {/* 금액 + 버튼 */}
@@ -105,7 +107,7 @@ export default function HomePage() {
           </p>
           <div className="h-2 bg-white overflow-hidden">
             <div
-              className="h-full bg-primary-foreground transition-all"
+              className="h-full bg-background transition-all"
               style={{ width: `${Math.min(stats.badPercentage, 100)}%` }}
             />
           </div>

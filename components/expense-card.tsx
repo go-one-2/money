@@ -15,7 +15,7 @@ interface ExpenseCardProps {
 const verdictConfig = {
   good: {
     label: "무죄",
-    className: "text-black",
+    className: "text-primary-foreground",
   },
   bad: {
     label: "유죄!",
