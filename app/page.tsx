@@ -4,17 +4,8 @@ import { useMemo, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ExpenseList } from "@/components/expense-list";
-import { Header } from "@/components/header";
-import { Button } from "@/components/ui/button";
 import { useExpenseStore } from "@/lib/store";
 import { formatCurrency, getCurrentMonth, getLastMonth } from "@/lib/utils";
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend } from "recharts";
-
-const COLORS = {
-  good: "var(--pixel-lime)",
-  bad: "var(--pixel-red)",
-  neutral: "var(--pixel-gray)",
-};
 
 export default function HomePage() {
   const router = useRouter();
@@ -76,22 +67,8 @@ export default function HomePage() {
   }, [currentMonth, lastMonth, getExpensesByMonth]);
 
   const recentExpenses = useMemo(() => {
-    return expenses.slice(0, 3);
+    return expenses.slice(0, 5);
   }, [expenses]);
-
-  const chartData = useMemo(() => {
-    const data = [];
-    if (stats.verdictCounts.good > 0) {
-      data.push({ name: "잘한 소비", value: stats.verdictCounts.good });
-    }
-    if (stats.verdictCounts.bad > 0) {
-      data.push({ name: "못한 소비", value: stats.verdictCounts.bad });
-    }
-    if (stats.verdictCounts.neutral > 0) {
-      data.push({ name: "참작", value: stats.verdictCounts.neutral });
-    }
-    return data;
-  }, [stats.verdictCounts]);
 
   if (!userSettings.onboardingCompleted) {
     return (
@@ -102,99 +79,62 @@ export default function HomePage() {
   }
 
   return (
-    <>
-      <Header title="소비 판단" />
-      <main className="container px-4 py-6 max-w-md mx-auto">
-        <div className="p-4 mb-4 bg-primary text-background">
-          <h3>이번 달 전체 소비</h3>
+    <div className="min-h-screen flex flex-col">
+      {/* 상단 컬러 영역 */}
+      <div className="bg-primary text-primary-foreground px-6 py-8">
+        <p className=" font-bold mb-2">이번 달 전체 소비</p>
 
-          <div>
-            <p className="text-4xl pixel-number">
-              {formatCurrency(stats.currentTotal)}
-            </p>
-            {stats.currentBadTotal > 0 && (
-              <p className="text-sm mt-2">
-                유죄 소비 {formatCurrency(stats.currentBadTotal)} (
-                {stats.badPercentage.toFixed(1)}%)
-              </p>
-            )}
-          </div>
+        {/* 금액 + 버튼 */}
+        <div className="flex items-center justify-between mb-6">
+          <p className="text-4xl pixel-number">
+            {formatCurrency(stats.currentTotal)}
+          </p>
+          <Link
+            href="/add"
+            className="text-4xl font-bold hover:scale-110 transition-transform"
+          >
+            +
+          </Link>
         </div>
 
-        {chartData.length > 0 && (
-          <div className="pixel-card-dark p-4 mb-4">
-            <div className="pb-2">
-              <h3>소비 분포</h3>
-            </div>
-            <div>
-              <div className="h-48">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      cx="50%"
-                      cy="50%"
-                      data={chartData}
-                      dataKey="value"
-                      innerRadius={40}
-                      outerRadius={70}
-                      paddingAngle={2}
-                      stroke="none"
-                    >
-                      {chartData.map((entry, index) => (
-                        <Cell
-                          key={`cell-${index}`}
-                          fill={
-                            entry.name === "잘한 소비"
-                              ? COLORS.good
-                              : entry.name === "못한 소비"
-                                ? COLORS.bad
-                                : COLORS.neutral
-                          }
-                        />
-                      ))}
-                    </Pie>
-                    <Legend
-                      iconSize={6}
-                      iconType="circle"
-                      wrapperStyle={{
-                        fontSize: 12,
-                        fontWeight: 700,
-                        marginRight: 22,
-                      }}
-                    />
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
+        {/* 유죄 소비 바 */}
+        <div className="pt-6">
+          <p className="text-sm mb-2 font-bold">
+            유죄 소비 {formatCurrency(stats.currentBadTotal)} (
+            {stats.badPercentage.toFixed(0)}%)
+          </p>
+          <div className="h-2 bg-white overflow-hidden">
+            <div
+              className="h-full bg-primary-foreground transition-all"
+              style={{ width: `${Math.min(stats.badPercentage, 100)}%` }}
+            />
           </div>
-        )}
+        </div>
+      </div>
 
-        <div className="flex items-center justify-between mb-3">
-          <h3>최근 소비</h3>
-          <Link href="/history">
-            <Button
-              className="text-foreground hover:text-primary hover:bg-transparent"
-              variant="pixel-ghost"
-              size="sm"
-            >
-              더보기
-            </Button>
+      {/* 하단 흰색 영역 */}
+      <div className="flex-1 bg-white text-black pt-6 px-4 ">
+        <div className="flex items-center justify-between mb-4 px-2">
+          <span className="font-bold">최근 소비</span>
+          <Link href="/history" className="text-sm text-gray-500">
+            더보기
           </Link>
         </div>
 
         {recentExpenses.length > 0 ? (
           <ExpenseList expenses={recentExpenses} />
         ) : (
-          <div className="pixel-card-dark p-8 text-center">
-            <p className="mb-4 text-muted-foreground">
-              아직 소비 내역이 없습니다.
-            </p>
-            <Link href="/add">
-              <Button variant="pixel-lime">첫 소비 기록하기</Button>
+          <div className="text-center py-12">
+            <p className="text-gray-400 mb-4">아직 소비 내역이 없습니다.</p>
+            <Link
+              href="/add"
+              className="inline-block px-6 py-3 bg-primary text-primary-foreground font-bold"
+            >
+              첫 소비 기록하기
             </Link>
           </div>
         )}
-      </main>
-    </>
+      </div>
+    </div>
   );
 }
