@@ -142,7 +142,7 @@ export default function OnboardingPage() {
         {/* Welcome */}
         {step === "welcome" && (
           <div className="space-y-8">
-            <div className="text-[var(--pixel-lime)] text-sm tracking-wider">
+            <div className="text-[--pixel-lime] text-sm tracking-wider">
               ※ 안녕 HELLO
             </div>
             <h1 className="text-5xl font-bold leading-tight pixel-font">
@@ -181,7 +181,7 @@ export default function OnboardingPage() {
         {/* Income */}
         {step === "income" && (
           <div className="space-y-6">
-            <div className="text-[var(--pixel-lime)] text-sm">「 01 」</div>
+            <div className="text-[--pixel-lime] text-sm">「 01 」</div>
 
             <div className="pixel-bubble text-black">
               <p className="text-lg font-bold mb-1">월 수입이 얼마인가요?</p>
@@ -230,7 +230,7 @@ export default function OnboardingPage() {
         {/* Savings */}
         {step === "savings" && (
           <div className="space-y-6">
-            <div className="text-[var(--pixel-lime)] text-sm">「 02 」</div>
+            <div className="text-[--pixel-lime] text-sm">「 02 」</div>
 
             <div className="pixel-bubble text-black">
               <p className="text-lg font-bold mb-1">
@@ -261,7 +261,7 @@ export default function OnboardingPage() {
             </div>
 
             {monthlyIncome && savingsGoal && (
-              <div className="text-[var(--pixel-lime)] text-center py-2">
+              <div className="text-[--pixel-lime] text-center py-2">
                 사용 가능: 월{" "}
                 {(
                   parseInt(monthlyIncome, 10) - parseInt(savingsGoal, 10)
@@ -293,7 +293,7 @@ export default function OnboardingPage() {
         {/* Priorities */}
         {step === "priorities" && (
           <div className="space-y-6">
-            <div className="text-[var(--pixel-lime)] text-sm">「 03 」</div>
+            <div className="text-[--pixel-lime] text-sm">「 03 」</div>
 
             <div className="pixel-bubble text-black">
               <p className="text-lg font-bold mb-1">
@@ -317,13 +317,13 @@ export default function OnboardingPage() {
                       "w-full p-4 text-left transition-all border-3 flex items-center gap-3",
                       "border-white/20 bg-white/5",
                       isSelected &&
-                        "border-[var(--pixel-lime)] bg-[var(--pixel-lime)]/10",
+                        "border-[--pixel-lime] bg-[--pixel-lime]/10",
                       isDisabled && "opacity-40 cursor-not-allowed",
                     )}
                   >
                     <div
                       className={cn(
-                        "pixel-checkbox flex-shrink-0",
+                        "pixel-checkbox shrink-0",
                         isSelected && "checked",
                       )}
                     >
@@ -366,14 +366,14 @@ export default function OnboardingPage() {
           <div className="space-y-6">
             <div className="text-center mb-8">
               <div className="inline-flex gap-4 mb-6">
-                <div className="text-[var(--pixel-lime)] pixel-float">
+                <div className="text-[--pixel-lime] pixel-float">
                   <PixelCloud />
                 </div>
                 <div className="pixel-float" style={{ animationDelay: "0.5s" }}>
                   <PixelHouse className="text-white" />
                 </div>
                 <div
-                  className="text-[var(--pixel-lime)] pixel-float"
+                  className="text-[--pixel-lime] pixel-float"
                   style={{ animationDelay: "1s" }}
                 >
                   <PixelCloud />
@@ -411,7 +411,7 @@ export default function OnboardingPage() {
                     {selectedPriorities.map((priority) => (
                       <span
                         key={priority}
-                        className="px-3 py-1 bg-[var(--pixel-lime)] text-black text-sm font-bold"
+                        className="px-3 py-1 bg-[--pixel-lime] text-black text-sm font-bold"
                       >
                         {priority}
                       </span>

@@ -1,39 +1,30 @@
-'use client';
+"use client";
 
-import { useMemo, useEffect, useState } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { ExpenseList } from '@/components/expense-list';
-import { Header } from '@/components/header';
-import { Button } from '@/components/ui/button';
-import { useExpenseStore } from '@/lib/store';
-import { formatCurrency, getCurrentMonth, getLastMonth } from '@/lib/utils';
-import {
-  PieChart,
-  Pie,
-  Cell,
-  ResponsiveContainer,
-  Legend,
-} from 'recharts';
+import { useMemo, useEffect } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { ExpenseList } from "@/components/expense-list";
+import { Header } from "@/components/header";
+import { Button } from "@/components/ui/button";
+import { useExpenseStore } from "@/lib/store";
+import { formatCurrency, getCurrentMonth, getLastMonth } from "@/lib/utils";
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend } from "recharts";
 
 const COLORS = {
-  good: 'var(--pixel-lime)',
-  bad: 'var(--pixel-red)',
-  neutral: 'var(--pixel-gray)',
+  good: "var(--pixel-lime)",
+  bad: "var(--pixel-red)",
+  neutral: "var(--pixel-gray)",
 };
 
 export default function HomePage() {
   const router = useRouter();
   const { expenses, getExpensesByMonth, userSettings } = useExpenseStore();
-  const [isReady, setIsReady] = useState(false);
   const currentMonth = getCurrentMonth();
   const lastMonth = getLastMonth();
 
   useEffect(() => {
     if (!userSettings.onboardingCompleted) {
-      router.replace('/onboarding');
-    } else {
-      setIsReady(true);
+      router.replace("/onboarding");
     }
   }, [userSettings.onboardingCompleted, router]);
 
@@ -42,19 +33,21 @@ export default function HomePage() {
     const lastMonthExpenses = getExpensesByMonth(lastMonth);
 
     const currentBadExpenses = currentMonthExpenses.filter(
-      (e) => e.verdict === 'bad'
+      (e) => e.verdict === "bad",
     );
-    const lastBadExpenses = lastMonthExpenses.filter((e) => e.verdict === 'bad');
+    const lastBadExpenses = lastMonthExpenses.filter(
+      (e) => e.verdict === "bad",
+    );
 
     const currentBadTotal = currentBadExpenses.reduce(
       (sum, e) => sum + e.amount,
-      0
+      0,
     );
     const lastBadTotal = lastBadExpenses.reduce((sum, e) => sum + e.amount, 0);
 
     const currentTotal = currentMonthExpenses.reduce(
       (sum, e) => sum + e.amount,
-      0
+      0,
     );
     const badPercentage =
       currentTotal > 0 ? (currentBadTotal / currentTotal) * 100 : 0;
@@ -65,10 +58,10 @@ export default function HomePage() {
         : 0;
 
     const verdictCounts = {
-      good: currentMonthExpenses.filter((e) => e.verdict === 'good').length,
+      good: currentMonthExpenses.filter((e) => e.verdict === "good").length,
       bad: currentBadExpenses.length,
       neutral: currentMonthExpenses.filter(
-        (e) => e.verdict === 'neutral' || !e.verdict
+        (e) => e.verdict === "neutral" || !e.verdict,
       ).length,
     };
 
@@ -79,7 +72,7 @@ export default function HomePage() {
       verdictCounts,
       totalExpenses: currentMonthExpenses.length,
     };
-  }, [expenses, currentMonth, lastMonth, getExpensesByMonth]);
+  }, [currentMonth, lastMonth, getExpensesByMonth]);
 
   const recentExpenses = useMemo(() => {
     return expenses.slice(0, 3);
@@ -88,18 +81,18 @@ export default function HomePage() {
   const chartData = useMemo(() => {
     const data = [];
     if (stats.verdictCounts.good > 0) {
-      data.push({ name: '잘한 소비', value: stats.verdictCounts.good });
+      data.push({ name: "잘한 소비", value: stats.verdictCounts.good });
     }
     if (stats.verdictCounts.bad > 0) {
-      data.push({ name: '못한 소비', value: stats.verdictCounts.bad });
+      data.push({ name: "못한 소비", value: stats.verdictCounts.bad });
     }
     if (stats.verdictCounts.neutral > 0) {
-      data.push({ name: '미분류', value: stats.verdictCounts.neutral });
+      data.push({ name: "미분류", value: stats.verdictCounts.neutral });
     }
     return data;
   }, [stats.verdictCounts]);
 
-  if (!isReady) {
+  if (!userSettings.onboardingCompleted) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="animate-pulse text-primary">로딩 중...</div>
@@ -127,12 +120,12 @@ export default function HomePage() {
             {stats.improvement !== 0 && (
               <p
                 className={`text-sm mt-2 ${
-                  stats.improvement > 0 ? 'text-primary' : 'text-destructive'
+                  stats.improvement > 0 ? "text-primary" : "text-destructive"
                 }`}
               >
-                {stats.improvement > 0 ? '↓' : '↑'} 지난 달 대비{' '}
-                {Math.abs(stats.improvement).toFixed(1)}%{' '}
-                {stats.improvement > 0 ? '감소' : '증가'}
+                {stats.improvement > 0 ? "↓" : "↑"} 지난 달 대비{" "}
+                {Math.abs(stats.improvement).toFixed(1)}%{" "}
+                {stats.improvement > 0 ? "감소" : "증가"}
               </p>
             )}
           </div>
@@ -160,11 +153,11 @@ export default function HomePage() {
                         <Cell
                           key={`cell-${index}`}
                           fill={
-                            entry.name === '잘한 소비'
+                            entry.name === "잘한 소비"
                               ? COLORS.good
-                              : entry.name === '못한 소비'
-                              ? COLORS.bad
-                              : COLORS.neutral
+                              : entry.name === "못한 소비"
+                                ? COLORS.bad
+                                : COLORS.neutral
                           }
                         />
                       ))}
@@ -178,7 +171,9 @@ export default function HomePage() {
         )}
 
         <div className="flex items-center justify-between mb-3">
-          <h2 className="font-semibold text-foreground pixel-font">최근 소비</h2>
+          <h2 className="font-semibold text-foreground pixel-font">
+            최근 소비
+          </h2>
           <Link href="/history">
             <Button variant="pixel-ghost" size="sm">
               더보기
@@ -190,7 +185,9 @@ export default function HomePage() {
           <ExpenseList expenses={recentExpenses} />
         ) : (
           <div className="pixel-card p-8 text-center">
-            <p className="mb-4 text-muted-foreground">아직 소비 내역이 없습니다.</p>
+            <p className="mb-4 text-muted-foreground">
+              아직 소비 내역이 없습니다.
+            </p>
             <Link href="/add">
               <Button variant="pixel-lime">첫 소비 기록하기</Button>
             </Link>
