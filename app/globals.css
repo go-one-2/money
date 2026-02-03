@@ -162,6 +162,14 @@
 }
 
 @font-face {
+  font-family: "Mulmaru";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/2601-4@1.1/Mulmaru.woff2")
+    format("woff2");
+  font-weight: normal;
+  font-display: swap;
+}
+
+@font-face {
   font-family: "Pretendard";
   src: url("https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff")
     format("woff");
@@ -207,6 +215,11 @@
   font-family: "DungGeunMo", monospace;
 }
 
+/* Pixel font for numbers */
+.pixel-number {
+  font-family: "Mulmaru", monospace;
+}
+
 .pixel-bubble {
   position: relative;
   background: var(--pixel-card);
@@ -226,6 +239,27 @@
   border-right: 3px solid var(--pixel-border);
   border-bottom: 3px solid var(--pixel-border);
   clip-path: polygon(0 0, 100% 0, 50% 100%);
+}
+
+.pixel-bubble-down {
+  position: relative;
+  background: var(--pixel-card);
+  border: 3px solid var(--pixel-border);
+  padding: 16px 20px;
+  image-rendering: pixelated;
+}
+
+.pixel-bubble-down::after {
+  content: "";
+  position: absolute;
+  top: -12px;
+  right: 12px;
+  width: 20px;
+  height: 12px;
+  background: var(--pixel-card);
+  border-left: 3px solid var(--pixel-border);
+  border-top: 3px solid var(--pixel-border);
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
 }
 
 .pixel-cloud {

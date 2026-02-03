@@ -88,7 +88,7 @@ export default function HomePage() {
       data.push({ name: "못한 소비", value: stats.verdictCounts.bad });
     }
     if (stats.verdictCounts.neutral > 0) {
-      data.push({ name: "미분류", value: stats.verdictCounts.neutral });
+      data.push({ name: "참작", value: stats.verdictCounts.neutral });
     }
     return data;
   }, [stats.verdictCounts]);
@@ -109,7 +109,7 @@ export default function HomePage() {
           <h3>이번 달 전체 소비</h3>
 
           <div>
-            <p className="text-5xl  pixel-font">
+            <p className="text-4xl pixel-number">
               {formatCurrency(stats.currentTotal)}
             </p>
             {stats.currentBadTotal > 0 && (
