@@ -8,6 +8,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import { Button } from '@/components/ui/button';
 import { useExpenseStore } from '@/lib/store';
 import { CATEGORIES, type Category, type Expense, type SubCategory } from '@/lib/types';
 import { generateId, cn, getCurrentMonth, getRemainingDaysInMonth } from '@/lib/utils';
@@ -129,9 +130,10 @@ export function ExpenseForm({ expense, onSuccess }: ExpenseFormProps) {
         <label className="text-sm font-medium pixel-font">날짜</label>
         <Popover>
           <PopoverTrigger asChild>
-            <button
+            <Button
+              variant="pixel"
               className={cn(
-                'pixel-btn w-full justify-start text-left font-normal flex items-center',
+                'w-full justify-start text-left font-normal',
                 !date && 'text-muted-foreground'
               )}
             >
@@ -153,7 +155,7 @@ export function ExpenseForm({ expense, onSuccess }: ExpenseFormProps) {
                 <path d="M3 10h18" />
               </svg>
               {date ? format(date, 'PPP', { locale: ko }) : '날짜를 선택하세요'}
-            </button>
+            </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0 pixel-popover" align="start">
             <Calendar
@@ -206,13 +208,14 @@ export function ExpenseForm({ expense, onSuccess }: ExpenseFormProps) {
       </div>
 
       <div className="pt-2">
-        <button
-          className="w-full pixel-btn pixel-btn-lime"
+        <Button
+          variant="pixel-lime"
+          className="w-full"
           onClick={() => handleSubmit(true)}
           disabled={isAnalyzing}
         >
           {isAnalyzing ? '판결 중...' : '판결하기'}
-        </button>
+        </Button>
       </div>
     </div>
   );

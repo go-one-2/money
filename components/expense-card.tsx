@@ -2,6 +2,7 @@
 
 import type { Expense } from '@/lib/types';
 import { formatCurrency, formatDate, cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 
 interface ExpenseCardProps {
   expense: Expense;
@@ -63,20 +64,23 @@ export function ExpenseCard({
         {showActions && (
           <div className="flex gap-1 ml-2">
             {onEdit && (
-              <button
-                className="pixel-btn text-xs py-1 px-2"
+              <Button
+                variant="pixel-ghost"
+                size="sm"
                 onClick={() => onEdit(expense)}
               >
                 수정
-              </button>
+              </Button>
             )}
             {onDelete && (
-              <button
-                className="pixel-btn text-xs py-1 px-2 text-destructive"
+              <Button
+                variant="pixel-ghost"
+                size="sm"
+                className="text-destructive hover:text-destructive"
                 onClick={() => onDelete(expense.id)}
               >
                 삭제
-              </button>
+              </Button>
             )}
           </div>
         )}

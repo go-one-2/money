@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Header } from '@/components/header';
+import { Button } from '@/components/ui/button';
 import { useExpenseStore } from '@/lib/store';
 import {
   CATEGORIES,
@@ -272,15 +273,13 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        <button
-          className={cn(
-            'w-full pixel-btn',
-            saved ? 'pixel-btn-lime' : ''
-          )}
+        <Button
+          variant={saved ? 'pixel-lime' : 'pixel'}
+          className="w-full"
           onClick={handleSave}
         >
           {saved ? '저장되었습니다!' : '저장하기'}
-        </button>
+        </Button>
       </main>
     </>
   );

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useExpenseStore } from "@/lib/store";
 import { PRIORITIES, PRIORITY_DESCRIPTIONS, type Priority } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 type Step = "welcome" | "income" | "savings" | "priorities" | "complete";
 
@@ -167,12 +168,13 @@ export default function OnboardingPage() {
               </p>
             </div>
 
-            <button
-              className="pixel-btn pixel-btn-lime w-full text-lg"
+            <Button
+              variant="pixel-lime"
+              className="w-full text-lg"
               onClick={handleNext}
             >
               시작하기
-            </button>
+            </Button>
           </div>
         )}
 
@@ -210,16 +212,17 @@ export default function OnboardingPage() {
             </div>
 
             <div className="flex gap-3 pt-4">
-              <button className="pixel-btn flex-1" onClick={handleSkip}>
+              <Button variant="pixel" className="flex-1" onClick={handleSkip}>
                 건너뛰기
-              </button>
-              <button
-                className="pixel-btn pixel-btn-lime flex-1"
+              </Button>
+              <Button
+                variant="pixel-lime"
+                className="flex-1"
                 onClick={handleNext}
                 disabled={!monthlyIncome}
               >
                 다음
-              </button>
+              </Button>
             </div>
           </div>
         )}
@@ -268,19 +271,21 @@ export default function OnboardingPage() {
             )}
 
             <div className="flex gap-3 pt-4">
-              <button
-                className="pixel-btn flex-1"
+              <Button
+                variant="pixel"
+                className="flex-1"
                 onClick={() => setStep("income")}
               >
                 이전
-              </button>
-              <button
-                className="pixel-btn pixel-btn-lime flex-1"
+              </Button>
+              <Button
+                variant="pixel-lime"
+                className="flex-1"
                 onClick={handleNext}
                 disabled={!savingsGoal}
               >
                 다음
-              </button>
+              </Button>
             </div>
           </div>
         )}
@@ -338,18 +343,20 @@ export default function OnboardingPage() {
             </div>
 
             <div className="flex gap-3 pt-2">
-              <button
-                className="pixel-btn flex-1"
+              <Button
+                variant="pixel"
+                className="flex-1"
                 onClick={() => setStep("savings")}
               >
                 이전
-              </button>
-              <button
-                className="pixel-btn pixel-btn-lime flex-1"
+              </Button>
+              <Button
+                variant="pixel-lime"
+                className="flex-1"
                 onClick={handleNext}
               >
                 다음
-              </button>
+              </Button>
             </div>
           </div>
         )}
@@ -414,12 +421,13 @@ export default function OnboardingPage() {
               )}
             </div>
 
-            <button
-              className="pixel-btn pixel-btn-lime w-full text-lg"
+            <Button
+              variant="pixel-lime"
+              className="w-full text-lg"
               onClick={handleComplete}
             >
               시작하기
-            </button>
+            </Button>
           </div>
         )}
       </div>

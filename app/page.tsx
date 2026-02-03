@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ExpenseList } from '@/components/expense-list';
 import { Header } from '@/components/header';
+import { Button } from '@/components/ui/button';
 import { useExpenseStore } from '@/lib/store';
 import { formatCurrency, getCurrentMonth, getLastMonth } from '@/lib/utils';
 import {
@@ -179,9 +180,9 @@ export default function HomePage() {
         <div className="flex items-center justify-between mb-3">
           <h2 className="font-semibold text-foreground pixel-font">최근 소비</h2>
           <Link href="/history">
-            <button className="pixel-btn text-sm py-2 px-4">
+            <Button variant="pixel-ghost" size="sm">
               더보기
-            </button>
+            </Button>
           </Link>
         </div>
 
@@ -191,7 +192,7 @@ export default function HomePage() {
           <div className="pixel-card p-8 text-center">
             <p className="mb-4 text-muted-foreground">아직 소비 내역이 없습니다.</p>
             <Link href="/add">
-              <button className="pixel-btn pixel-btn-lime">첫 소비 기록하기</button>
+              <Button variant="pixel-lime">첫 소비 기록하기</Button>
             </Link>
           </div>
         )}

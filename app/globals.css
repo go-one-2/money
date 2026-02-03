@@ -227,34 +227,6 @@
   background-size: 4px 4px;
 }
 
-.pixel-btn {
-  background: var(--pixel-card);
-  color: var(--pixel-border);
-  border: 3px solid var(--pixel-border);
-  font-family: "DungGeunMo", monospace;
-  padding: 12px 24px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: all 0.1s;
-  box-shadow: 4px 4px 0 var(--pixel-border);
-  font-weight: 500;
-}
-
-.pixel-btn:hover {
-  transform: translate(2px, 2px);
-  box-shadow: 2px 2px 0 var(--pixel-border);
-}
-
-.pixel-btn:active {
-  transform: translate(4px, 4px);
-  box-shadow: none;
-}
-
-.pixel-btn-lime {
-  background: var(--pixel-lime);
-  color: var(--pixel-border);
-}
-
 .pixel-input {
   background: var(--pixel-card);
   border: 3px solid var(--pixel-border);
