@@ -66,6 +66,7 @@ export default function HomePage() {
     };
 
     return {
+      currentTotal,
       currentBadTotal,
       badPercentage,
       improvement,
@@ -104,26 +105,17 @@ export default function HomePage() {
     <>
       <Header title="소비 판단" />
       <main className="container px-4 py-6 max-w-md mx-auto">
-        <div className="pixel-card-dark p-4 mb-4">
-          <div className="pb-2">
-            <h3>이번 달 잘못한 소비</h3>
-          </div>
+        <div className="p-4 mb-4 bg-primary text-background">
+          <h3>이번 달 전체 소비</h3>
+
           <div>
-            <p className="text-3xl font-bold text-destructive pixel-font">
-              {formatCurrency(stats.currentBadTotal)}
+            <p className="text-5xl  pixel-font">
+              {formatCurrency(stats.currentTotal)}
             </p>
-            <p className="text-sm text-muted-foreground mt-1">
-              전체 소비의 {stats.badPercentage.toFixed(1)}%
-            </p>
-            {stats.improvement !== 0 && (
-              <p
-                className={`text-sm mt-2 ${
-                  stats.improvement > 0 ? "text-primary" : "text-destructive"
-                }`}
-              >
-                {stats.improvement > 0 ? "↓" : "↑"} 지난 달 대비{" "}
-                {Math.abs(stats.improvement).toFixed(1)}%{" "}
-                {stats.improvement > 0 ? "감소" : "증가"}
+            {stats.currentBadTotal > 0 && (
+              <p className="text-sm mt-2">
+                유죄 소비 {formatCurrency(stats.currentBadTotal)} (
+                {stats.badPercentage.toFixed(1)}%)
               </p>
             )}
           </div>

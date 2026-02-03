@@ -46,7 +46,7 @@ export function ExpenseCard({
               </span>
             )}
           </div>
-          <p className="font-semibold text-3xl pixel-font">
+          <p className="text-3xl pixel-font">
             {formatCurrency(expense.amount)}
           </p>
           {expense.memo && <p className="text-base mt-1">{expense.memo}</p>}
