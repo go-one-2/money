@@ -1,0 +1,9 @@
+{
+  "name": "소비 판단",
+  "short_name": "소비 판단",
+  "description": "잘한 소비 vs 못한 소비를 판단해주는 웹앱",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff"
+}
