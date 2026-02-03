@@ -1,8 +1,9 @@
-'use client';
+"use client";
 
-import type { Expense } from '@/lib/types';
-import { formatCurrency, formatDate, cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
+import { useState } from "react";
+import type { Expense } from "@/lib/types";
+import { formatCurrency, formatDate, cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 interface ExpenseCardProps {
   expense: Expense;
@@ -13,16 +14,16 @@ interface ExpenseCardProps {
 
 const verdictConfig = {
   good: {
-    label: '잘한 소비',
-    className: 'pixel-badge-lime',
+    label: "무죄",
+    className: "text-primary-foreground",
   },
   bad: {
-    label: '못한 소비',
-    className: 'pixel-badge-red',
+    label: "유죄!",
+    className: "text-destructive",
   },
   neutral: {
-    label: '보통',
-    className: 'pixel-badge-gray',
+    label: "참작",
+    className: "text-gray-500",
   },
 };
 
@@ -32,59 +33,78 @@ export function ExpenseCard({
   onEdit,
   showActions = false,
 }: ExpenseCardProps) {
+  const [showReason, setShowReason] = useState(false);
   const verdict = expense.verdict ? verdictConfig[expense.verdict] : null;
+  const hasReason = expense.reason;
 
   return (
-    <div className="pixel-card mb-3 p-4">
-      <div className="flex items-start justify-between">
+    <div
+      className={cn("bg-white mb-3 p-2", hasReason && "cursor-pointer")}
+      onClick={() => hasReason && setShowReason(!showReason)}
+    >
+      <div className="flex justify-between items-center">
+        {/* 왼쪽: 카테고리, 금액, 메모 */}
         <div className="flex-1">
-          <div className="flex items-center gap-2 mb-1">
-            <span className="pixel-badge">{expense.category}</span>
-            {verdict && (
-              <span className={cn('pixel-badge', verdict.className)}>{verdict.label}</span>
-            )}
-          </div>
-          <p className="font-semibold text-lg pixel-font">
+          <span className="inline-block border-2 border-black px-2 py-0.5 text-xs font-bold mb-2">
+            {expense.category}
+          </span>
+          <p className="text-2xl pixel-number text-black">
             {formatCurrency(expense.amount)}
           </p>
           {expense.memo && (
-            <p className="text-sm text-muted-foreground mt-1">
-              {expense.memo}
+            <p className="text-sm text-gray-600 mt-1">{expense.memo}</p>
+          )}
+        </div>
+
+        {/* 오른쪽: 판정, 날짜 */}
+        <div className="text-right">
+          {verdict && (
+            <p
+              className={cn("text-lg font-bold pixel-font", verdict.className)}
+            >
+              {verdict.label}
             </p>
           )}
-          {expense.reason && (
-            <p className="text-xs text-muted-foreground mt-2 p-2 bg-muted border-2 border-muted">
-              {expense.reason}
-            </p>
-          )}
-          <p className="text-xs text-muted-foreground mt-2">
+          <p className="text-xs text-gray-500 mt-1">
             {formatDate(expense.date)}
           </p>
         </div>
-        {showActions && (
-          <div className="flex gap-1 ml-2">
-            {onEdit && (
-              <Button
-                variant="pixel-ghost"
-                size="sm"
-                onClick={() => onEdit(expense)}
-              >
-                수정
-              </Button>
-            )}
-            {onDelete && (
-              <Button
-                variant="pixel-ghost"
-                size="sm"
-                className="text-destructive hover:text-destructive"
-                onClick={() => onDelete(expense.id)}
-              >
-                삭제
-              </Button>
-            )}
-          </div>
-        )}
       </div>
+
+      {/* 수정/삭제 버튼 */}
+      {showActions && (
+        <div
+          className="flex justify-end gap-2 mt-3 pt-3 border-t border-gray-200"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {onEdit && (
+            <Button
+              variant="pixel-ghost"
+              size="sm"
+              onClick={() => onEdit(expense)}
+            >
+              수정
+            </Button>
+          )}
+          {onDelete && (
+            <Button
+              variant="pixel-ghost"
+              size="sm"
+              className="text-destructive hover:text-destructive"
+              onClick={() => onDelete(expense.id)}
+            >
+              삭제
+            </Button>
+          )}
+        </div>
+      )}
+
+      {/* 말풍선 - 카드 하단 */}
+      {hasReason && showReason && (
+        <div className="mt-3 pt-3 border-t border-gray-200 text-sm text-gray-700">
+          {expense.reason}
+        </div>
+      )}
     </div>
   );
 }

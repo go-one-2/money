@@ -14,7 +14,7 @@ import {
 import { cn } from '@/lib/utils';
 
 export default function SettingsPage() {
-  const { userSettings, updateUserSettings } = useExpenseStore();
+  const { userSettings, updateUserSettings, reanalyzeAllExpenses } = useExpenseStore();
 
   const [monthlyIncome, setMonthlyIncome] = useState(
     userSettings.monthlyIncome.toString()
@@ -29,6 +29,7 @@ export default function SettingsPage() {
     userSettings.priorities || []
   );
   const [saved, setSaved] = useState(false);
+  const [isReanalyzing, setIsReanalyzing] = useState(false);
 
   useEffect(() => {
     setMonthlyIncome(userSettings.monthlyIncome.toString());
@@ -57,13 +58,24 @@ export default function SettingsPage() {
     });
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     updateUserSettings({
       monthlyIncome: parseInt(monthlyIncome, 10) || 0,
       savingsGoal: parseInt(savingsGoal, 10) || 0,
       essentialCategories,
       priorities: selectedPriorities,
     });
+
+    // 기존 소비 내역 재분석
+    setIsReanalyzing(true);
+    try {
+      await reanalyzeAllExpenses();
+    } catch (error) {
+      console.error('Reanalysis failed:', error);
+    } finally {
+      setIsReanalyzing(false);
+    }
+
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };
@@ -277,8 +289,9 @@ export default function SettingsPage() {
           variant={saved ? 'pixel-lime' : 'pixel'}
           className="w-full"
           onClick={handleSave}
+          disabled={isReanalyzing}
         >
-          {saved ? '저장되었습니다!' : '저장하기'}
+          {isReanalyzing ? '재분석 중...' : saved ? '저장되었습니다!' : '저장하기'}
         </Button>
       </main>
     </>

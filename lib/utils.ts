@@ -6,10 +6,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat('ko-KR', {
-    style: 'currency',
-    currency: 'KRW',
-  }).format(amount);
+  return new Intl.NumberFormat('ko-KR').format(amount) + '원';
 }
 
 export function formatDate(dateString: string): string {

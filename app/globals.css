@@ -52,9 +52,9 @@
   /* Pixel Theme Colors */
   --pixel-bg: #0a0a0a;
   --pixel-card: #ffffff;
-  --pixel-card-dark: #1a1a1a;
+  --pixel-card-dark: #2f2f2f;
   --pixel-border: #0a0a0a;
-  --pixel-border-light: #444444;
+  --pixel-border-light: #272727;
   --pixel-lime: #c8e600;
   --pixel-red: #ff4444;
   --pixel-muted: #555555;
@@ -70,7 +70,7 @@
   --popover: #ffffff;
   --popover-foreground: #0a0a0a;
   --primary: #c8e600;
-  --primary-foreground: #0a0a0a;
+  --primary-foreground: #84a900;
   --secondary: #1a1a1a;
   --secondary-foreground: #ffffff;
   --muted: #1a1a1a;
@@ -138,6 +138,18 @@
   body {
     @apply bg-background text-foreground;
   }
+  h1 {
+    @apply text-2xl font-semibold;
+    font-family: "DungGeunMo", monospace;
+  }
+  h2 {
+    @apply text-xl font-semibold;
+    font-family: "DungGeunMo", monospace;
+  }
+  h3 {
+    @apply text-lg font-medium;
+    font-family: "DungGeunMo", monospace;
+  }
 }
 
 /* Fonts */
@@ -147,6 +159,14 @@
     format("woff");
   font-weight: normal;
   font-style: normal;
+}
+
+@font-face {
+  font-family: "Mulmaru";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/2601-4@1.1/Mulmaru.woff2")
+    format("woff2");
+  font-weight: normal;
+  font-display: swap;
 }
 
 @font-face {
@@ -182,12 +202,22 @@
 }
 
 .pixel-theme {
-  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  font-family:
+    "Pretendard",
+    -apple-system,
+    BlinkMacSystemFont,
+    system-ui,
+    sans-serif;
 }
 
 /* Pixel font for titles and emphasis */
 .pixel-font {
   font-family: "DungGeunMo", monospace;
+}
+
+/* Pixel font for numbers */
+.pixel-number {
+  font-family: "Mulmaru", monospace;
 }
 
 .pixel-bubble {
@@ -211,19 +241,56 @@
   clip-path: polygon(0 0, 100% 0, 50% 100%);
 }
 
+.pixel-bubble-down {
+  position: relative;
+  background: var(--pixel-card);
+  border: 3px solid var(--pixel-border);
+  padding: 16px 20px;
+  image-rendering: pixelated;
+}
+
+.pixel-bubble-down::after {
+  content: "";
+  position: absolute;
+  top: -12px;
+  right: 12px;
+  width: 20px;
+  height: 12px;
+  background: var(--pixel-card);
+  border-left: 3px solid var(--pixel-border);
+  border-top: 3px solid var(--pixel-border);
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+
 .pixel-cloud {
   width: 60px;
   height: 36px;
   background:
-    radial-gradient(circle at 30% 70%, var(--pixel-card) 12px, transparent 12px),
-    radial-gradient(circle at 50% 50%, var(--pixel-card) 16px, transparent 16px),
-    radial-gradient(circle at 70% 70%, var(--pixel-card) 12px, transparent 12px),
+    radial-gradient(
+      circle at 30% 70%,
+      var(--pixel-card) 12px,
+      transparent 12px
+    ),
+    radial-gradient(
+      circle at 50% 50%,
+      var(--pixel-card) 16px,
+      transparent 16px
+    ),
+    radial-gradient(
+      circle at 70% 70%,
+      var(--pixel-card) 12px,
+      transparent 12px
+    ),
     radial-gradient(circle at 50% 80%, var(--pixel-card) 14px, transparent 14px);
   filter: url("#halftone");
 }
 
 .halftone-pattern {
-  background-image: radial-gradient(circle, var(--pixel-muted) 1px, transparent 1px);
+  background-image: radial-gradient(
+    circle,
+    var(--pixel-muted) 1px,
+    transparent 1px
+  );
   background-size: 4px 4px;
 }
 
@@ -285,7 +352,7 @@
 
 .pixel-card-dark {
   background: var(--pixel-card-dark);
-  border: 3px solid var(--pixel-border-light);
+  /* border: 1px solid var(--pixel-border-light); */
   color: var(--pixel-card);
 }
 
@@ -310,7 +377,7 @@
   border: 2px solid var(--pixel-border);
   font-family: "DungGeunMo", monospace;
   padding: 4px 8px;
-  font-size: 11px;
+  font-size: 12px;
   color: var(--pixel-border);
   display: inline-block;
 }
@@ -336,7 +403,7 @@
 /* Pixel Header Style */
 .pixel-header {
   background: var(--pixel-bg);
-  border-bottom: 3px solid var(--pixel-lime);
+  /* border-bottom: 3px solid var(--pixel-lime); */
   color: var(--pixel-card);
 }
 
