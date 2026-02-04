@@ -24,6 +24,7 @@ import {
   type Category,
   type Expense,
   type SubCategory,
+  type Verdict,
 } from "@/lib/types";
 import {
   generateId,
@@ -43,6 +44,12 @@ const CATEGORY_ICONS: Record<Category, React.ReactNode> = {
   기타: <MoreHorizontal className="w-4 h-4" />,
 };
 
+const VERDICT_CONFIG: Record<Verdict, { label: string; color: string; bg: string }> = {
+  good: { label: "무죄", color: "text-[var(--pixel-lime)]", bg: "bg-[var(--pixel-lime)]" },
+  bad: { label: "유죄", color: "text-[var(--pixel-red)]", bg: "bg-[var(--pixel-red)]" },
+  neutral: { label: "보류", color: "text-[var(--pixel-gray)]", bg: "bg-[var(--pixel-gray)]" },
+};
+
 export default function AddExpensePage() {
   const router = useRouter();
   const {
@@ -53,7 +60,7 @@ export default function AddExpensePage() {
     getCategoryTotalInMonth,
   } = useExpenseStore();
 
-  const [step, setStep] = useState<"amount" | "detail">("amount");
+  const [step, setStep] = useState<"amount" | "detail" | "loading" | "result">("amount");
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [date, setDate] = useState<Date>(() => new Date());
   const [isVisible, setIsVisible] = useState(false);
@@ -67,10 +74,17 @@ export default function AddExpensePage() {
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState<Category>("쇼핑");
   const [memo, setMemo] = useState("");
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [activeKey, setActiveKey] = useState<string | null>(null);
   const [showCalendar, setShowCalendar] = useState(false);
   const [showCategorySelect, setShowCategorySelect] = useState(false);
+
+  // 판결 결과
+  const [verdictResult, setVerdictResult] = useState<{
+    verdict: Verdict;
+    reason: string;
+  } | null>(null);
+  const [showVerdictContent, setShowVerdictContent] = useState(false);
+  const [loadingDots, setLoadingDots] = useState("");
 
   // Drag handling
   const dragStartY = useRef<number | null>(null);
@@ -121,12 +135,23 @@ export default function AddExpensePage() {
     }, 300);
   };
 
+  // 로딩 애니메이션
+  useEffect(() => {
+    if (step === "loading") {
+      const interval = setInterval(() => {
+        setLoadingDots((prev) => (prev.length >= 3 ? "" : prev + "."));
+      }, 400);
+      return () => clearInterval(interval);
+    }
+  }, [step]);
+
   const handleSubmit = async () => {
     if (!amount || amount === "0") {
       return;
     }
 
-    setIsAnalyzing(true);
+    // 로딩 화면으로 전환
+    setStep("loading");
 
     try {
       const expenseData: Expense = {
@@ -181,14 +206,32 @@ export default function AddExpensePage() {
       expenseData.subCategory = result.subCategory;
 
       addExpense(expenseData);
-      setIsVisible(false);
+
+      // 결과 저장
+      setVerdictResult({
+        verdict: result.verdict,
+        reason: result.reason,
+      });
+
+      // 로딩 최소 시간 보장 후 결과 화면으로 전환
       setTimeout(() => {
-        router.push("/history");
-      }, 300);
+        setStep("result");
+        // 결과 컨텐츠 순차 표시
+        setTimeout(() => {
+          setShowVerdictContent(true);
+        }, 100);
+      }, 1500); // 최소 1.5초 로딩
     } catch (error) {
       console.error("Analysis failed:", error);
-      setIsAnalyzing(false);
+      setStep("detail"); // 에러 시 다시 상세 화면으로
     }
+  };
+
+  const handleConfirmResult = () => {
+    setIsVisible(false);
+    setTimeout(() => {
+      router.push("/history");
+    }, 300);
   };
 
   const handleDateSelect = (d: Date | undefined) => {
@@ -205,14 +248,14 @@ export default function AddExpensePage() {
   const handleTouchMove = (e: React.TouchEvent) => {
     if (dragStartY.current === null) return;
     const currentY = e.touches[0].clientY;
-    const diff = dragStartY.current - currentY; // 위로 드래그하면 양수
+    const diff = dragStartY.current - currentY;
     if (diff > 0) {
-      setDragOffset(-diff); // 음수로 위로 이동
+      setDragOffset(-diff);
     }
   };
 
   const handleTouchEnd = () => {
-    if (dragOffset < -100) { // 위로 100px 이상 드래그하면 닫기
+    if (dragOffset < -100) {
       setShowCalendar(false);
     }
     setDragOffset(0);
@@ -222,6 +265,9 @@ export default function AddExpensePage() {
   const handleBack = () => {
     if (step === "detail") {
       handleBackToAmount();
+    } else if (step === "result") {
+      // 결과 화면에서는 뒤로가기 불가
+      return;
     } else {
       setIsVisible(false);
       setTimeout(() => {
@@ -236,6 +282,123 @@ export default function AddExpensePage() {
     ["7", "8", "9"],
     ["000", "0", "delete"],
   ];
+
+  // 로딩 화면
+  if (step === "loading") {
+    return (
+      <div
+        className={`fixed inset-0 flex flex-col bg-background overflow-hidden transition-transform duration-300 ease-out ${
+          isVisible ? "translate-y-0" : "translate-y-full"
+        }`}
+      >
+        <div className="flex-1 flex flex-col items-center justify-center px-6">
+          {/* 로딩 애니메이션 */}
+          <div className="relative">
+            {/* 펄스 효과 */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-24 h-24 rounded-full bg-[var(--pixel-lime)]/20 animate-ping" />
+            </div>
+            <div className="relative w-24 h-24 rounded-full bg-[var(--pixel-lime)]/10 flex items-center justify-center">
+              <div className="w-16 h-16 rounded-full bg-[var(--pixel-lime)]/20 flex items-center justify-center">
+                <div className="w-8 h-8 rounded-full bg-[var(--pixel-lime)]" />
+              </div>
+            </div>
+          </div>
+
+          {/* 로딩 텍스트 */}
+          <div className="mt-12 text-center">
+            <p className="text-xl pixel-font text-foreground">
+              판단 중{loadingDots}
+            </p>
+            <p className="mt-4 text-sm text-muted-foreground">
+              소비 내역을 분석하고 있어요
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // 결과 화면
+  if (step === "result" && verdictResult) {
+    const config = VERDICT_CONFIG[verdictResult.verdict];
+
+    return (
+      <div
+        className={`fixed inset-0 flex flex-col bg-background overflow-hidden transition-transform duration-300 ease-out ${
+          isVisible ? "translate-y-0" : "translate-y-full"
+        }`}
+      >
+        {/* 결과 컨텐츠 */}
+        <div className="flex-1 flex flex-col items-center justify-center px-6">
+          {/* 판결 라벨 */}
+          <div
+            className={`
+              transition-all duration-500 ease-out
+              ${showVerdictContent ? "opacity-100 scale-100" : "opacity-0 scale-75"}
+            `}
+          >
+            <span className={`text-6xl pixel-font ${config.color}`}>
+              {config.label}
+            </span>
+          </div>
+
+          {/* 금액 */}
+          <div
+            className={`
+              mt-8 transition-all duration-500 delay-200 ease-out
+              ${showVerdictContent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}
+            `}
+          >
+            <span className="text-2xl pixel-number text-foreground">
+              {formatAmount(amount)}원
+            </span>
+          </div>
+
+          {/* 카테고리 */}
+          <div
+            className={`
+              mt-2 flex items-center gap-2 transition-all duration-500 delay-300 ease-out
+              ${showVerdictContent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}
+            `}
+          >
+            {CATEGORY_ICONS[category]}
+            <span className="text-muted-foreground">{category}</span>
+          </div>
+
+          {/* 판결 이유 */}
+          <div
+            className={`
+              mt-8 px-4 py-6 max-w-sm text-center
+              transition-all duration-500 delay-500 ease-out
+              ${showVerdictContent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}
+            `}
+          >
+            <p className="text-foreground/80 text-sm leading-relaxed">
+              {verdictResult.reason}
+            </p>
+          </div>
+        </div>
+
+        {/* 확인 버튼 */}
+        <div
+          className={`
+            px-4 pb-4
+            transition-all duration-500 delay-700 ease-out
+            ${showVerdictContent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}
+          `}
+        >
+          <Button
+            variant="pixel-lime"
+            className="w-full"
+            onClick={handleConfirmResult}
+          >
+            확인
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -425,9 +588,8 @@ export default function AddExpensePage() {
                 variant="pixel-lime"
                 className="w-full"
                 onClick={handleSubmit}
-                disabled={isAnalyzing}
               >
-                {isAnalyzing ? "판단 중..." : "판단하기"}
+                판단하기
               </Button>
             </div>
           </>
