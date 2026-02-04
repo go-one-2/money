@@ -529,3 +529,17 @@
   width: 100%;
   font-size: 16px;
 }
+
+/* 저울 흔들림 애니메이션 */
+@keyframes scale-swing {
+  0%, 100% {
+    transform: rotate(-12deg);
+  }
+  50% {
+    transform: rotate(12deg);
+  }
+}
+
+.animate-scale-swing {
+  animation: scale-swing 1s ease-in-out infinite;
+}

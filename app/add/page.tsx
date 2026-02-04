@@ -44,10 +44,25 @@ const CATEGORY_ICONS: Record<Category, React.ReactNode> = {
   기타: <MoreHorizontal className="w-4 h-4" />,
 };
 
-const VERDICT_CONFIG: Record<Verdict, { label: string; color: string; bg: string }> = {
-  good: { label: "무죄", color: "text-[var(--pixel-lime)]", bg: "bg-[var(--pixel-lime)]" },
-  bad: { label: "유죄", color: "text-[var(--pixel-red)]", bg: "bg-[var(--pixel-red)]" },
-  neutral: { label: "보류", color: "text-[var(--pixel-gray)]", bg: "bg-[var(--pixel-gray)]" },
+const VERDICT_CONFIG: Record<
+  Verdict,
+  { label: string; color: string; bg: string }
+> = {
+  good: {
+    label: "무죄",
+    color: "text-[var(--pixel-lime)]",
+    bg: "bg-[var(--pixel-lime)]",
+  },
+  bad: {
+    label: "유죄",
+    color: "text-[var(--pixel-red)]",
+    bg: "bg-[var(--pixel-red)]",
+  },
+  neutral: {
+    label: "보류",
+    color: "text-[var(--pixel-gray)]",
+    bg: "bg-[var(--pixel-gray)]",
+  },
 };
 
 export default function AddExpensePage() {
@@ -60,7 +75,9 @@ export default function AddExpensePage() {
     getCategoryTotalInMonth,
   } = useExpenseStore();
 
-  const [step, setStep] = useState<"amount" | "detail" | "loading" | "result">("amount");
+  const [step, setStep] = useState<"amount" | "detail" | "loading" | "result">(
+    "amount",
+  );
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [date, setDate] = useState<Date>(() => new Date());
   const [isVisible, setIsVisible] = useState(false);
@@ -292,21 +309,39 @@ export default function AddExpensePage() {
         }`}
       >
         <div className="flex-1 flex flex-col items-center justify-center px-6">
-          {/* 로딩 애니메이션 */}
-          <div className="relative">
-            {/* 펄스 효과 */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-24 h-24 rounded-full bg-[var(--pixel-lime)]/20 animate-ping" />
-            </div>
-            <div className="relative w-24 h-24 rounded-full bg-[var(--pixel-lime)]/10 flex items-center justify-center">
-              <div className="w-16 h-16 rounded-full bg-[var(--pixel-lime)]/20 flex items-center justify-center">
-                <div className="w-8 h-8 rounded-full bg-[var(--pixel-lime)]" />
+          {/* 픽셀 저울 애니메이션 */}
+          <div className="flex flex-col items-center">
+            {/* 저울대 (흔들리는 부분) */}
+            <div className="relative w-32 animate-scale-swing origin-top">
+              {/* 가로 막대 */}
+              <div className="h-2 bg-[var(--pixel-lime)] relative">
+                <div className="absolute left-1/2 -translate-x-1/2 -top-1 w-3 h-3 bg-[var(--pixel-lime)]" />
+              </div>
+
+              {/* 왼쪽 줄 + 접시 */}
+              <div className="absolute left-1 top-2 flex flex-col items-center">
+                <div className="w-0.5 h-12 bg-foreground/50" />
+                <div className="w-5 h-1 bg-foreground/70 rounded-sm" />
+                <div className="w-3 h-1 bg-foreground/70 rounded-sm" />
+              </div>
+
+              {/* 오른쪽 줄 + 접시 */}
+              <div className="absolute right-1 top-2 flex flex-col items-center">
+                <div className="w-0.5 h-12 bg-foreground/50" />
+                <div className="w-5 h-1 bg-foreground/70 rounded-sm" />
+                <div className="w-3 h-1 bg-foreground/70 rounded-sm" />
               </div>
             </div>
+
+            {/* 기둥 - 저울대 바로 아래 붙임 */}
+            <div className="w-2 h-20 bg-foreground/80" />
+            {/* 받침대 */}
+            <div className="w-10 h-2 bg-foreground/80 rounded-sm" />
+            <div className="w-6 h-1 bg-foreground/60 rounded-sm" />
           </div>
 
           {/* 로딩 텍스트 */}
-          <div className="mt-12 text-center">
+          <div className="mt-8 text-center">
             <p className="text-xl pixel-font text-foreground">
               판단 중{loadingDots}
             </p>
@@ -441,15 +476,18 @@ export default function AddExpensePage() {
         <div
           className={`
             transition-all duration-300 ease-out
-            ${step === "amount"
-              ? "flex-1 flex flex-col items-center justify-center px-4"
-              : "px-4 py-0"
+            ${
+              step === "amount"
+                ? "flex-1 flex flex-col items-center justify-center px-4"
+                : "px-4 py-0"
             }
             ${isTransitioning ? "opacity-50" : "opacity-100"}
           `}
         >
           {step === "amount" && (
-            <p className={`text-muted-foreground mb-6 pixel-font transition-opacity duration-200 ${isTransitioning ? "opacity-0" : "opacity-100"}`}>
+            <p
+              className={`text-muted-foreground mb-6 pixel-font transition-opacity duration-200 ${isTransitioning ? "opacity-0" : "opacity-100"}`}
+            >
               얼마를 쓰셨어요?
             </p>
           )}
@@ -469,7 +507,9 @@ export default function AddExpensePage() {
               </span>
             </button>
           ) : (
-            <div className={`text-4xl pixel-number tracking-tight transition-all duration-300 ${isTransitioning ? "opacity-0 -translate-y-8" : "opacity-100 translate-y-0"}`}>
+            <div
+              className={`text-4xl pixel-number tracking-tight transition-all duration-300 ${isTransitioning ? "opacity-0 -translate-y-8" : "opacity-100 translate-y-0"}`}
+            >
               {formatAmount(amount)}원
             </div>
           )}
@@ -477,7 +517,9 @@ export default function AddExpensePage() {
 
         {step === "amount" ? (
           /* Keypad Section */
-          <div className={`px-4 pb-4 transition-all duration-300 ${isTransitioning ? "opacity-0 translate-y-8" : "opacity-100 translate-y-0"}`}>
+          <div
+            className={`px-4 pb-4 transition-all duration-300 ${isTransitioning ? "opacity-0 translate-y-8" : "opacity-100 translate-y-0"}`}
+          >
             <div className="grid grid-cols-3 gap-1 mb-4">
               {keypadButtons.flat().map((key) => (
                 <button
