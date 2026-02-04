@@ -497,3 +497,35 @@
 .pixel-title {
   font-family: "DungGeunMo", monospace;
 }
+
+/* Full screen calendar */
+.calendar-fullscreen {
+  --cell-size: 48px;
+}
+
+.calendar-fullscreen [data-slot="calendar"] {
+  width: 100%;
+}
+
+.calendar-fullscreen .rdp-month {
+  width: 100%;
+}
+
+.calendar-fullscreen .rdp-table {
+  width: 100%;
+}
+
+.calendar-fullscreen .rdp-weekday,
+.calendar-fullscreen .rdp-day button {
+  font-family: "DungGeunMo", monospace;
+}
+
+.calendar-fullscreen .rdp-day {
+  height: var(--cell-size);
+}
+
+.calendar-fullscreen .rdp-day button {
+  height: 100%;
+  width: 100%;
+  font-size: 16px;
+}
