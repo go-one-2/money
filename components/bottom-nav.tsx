@@ -115,6 +115,11 @@ const navItems = [
 export function BottomNav() {
   const pathname = usePathname();
 
+  // 입력 화면에서는 네비게이션바 숨기기
+  if (pathname === '/add') {
+    return null;
+  }
+
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 pixel-nav safe-area-inset-bottom">
       <div className="flex justify-around items-center h-16 max-w-md mx-auto">

@@ -1,24 +1,46 @@
-'use client';
+"use client";
 
-import { useState, useRef, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { ChevronLeft, ChevronDown, Delete, ShoppingCart, Utensils, Car, Clapperboard, Stethoscope, GraduationCap, Home, MoreHorizontal } from 'lucide-react';
-import { Calendar } from '@/components/ui/calendar';
-import { Button } from '@/components/ui/button';
-import { useExpenseStore } from '@/lib/store';
-import { CATEGORIES, type Category, type Expense, type SubCategory } from '@/lib/types';
-import { generateId, getCurrentMonth, getRemainingDaysInMonth } from '@/lib/utils';
-import { format } from 'date-fns';
+import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import {
+  ChevronLeft,
+  ChevronDown,
+  Delete,
+  ShoppingCart,
+  Utensils,
+  Car,
+  Clapperboard,
+  Stethoscope,
+  GraduationCap,
+  Home,
+  MoreHorizontal,
+  ChevronUp,
+} from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { Button } from "@/components/ui/button";
+import { useExpenseStore } from "@/lib/store";
+import {
+  CATEGORIES,
+  type Category,
+  type Expense,
+  type SubCategory,
+} from "@/lib/types";
+import {
+  generateId,
+  getCurrentMonth,
+  getRemainingDaysInMonth,
+} from "@/lib/utils";
+import { format } from "date-fns";
 
 const CATEGORY_ICONS: Record<Category, React.ReactNode> = {
-  '식비': <Utensils className="w-4 h-4" />,
-  '교통': <Car className="w-4 h-4" />,
-  '쇼핑': <ShoppingCart className="w-4 h-4" />,
-  '문화/여가': <Clapperboard className="w-4 h-4" />,
-  '의료': <Stethoscope className="w-4 h-4" />,
-  '교육': <GraduationCap className="w-4 h-4" />,
-  '주거': <Home className="w-4 h-4" />,
-  '기타': <MoreHorizontal className="w-4 h-4" />,
+  식비: <Utensils className="w-4 h-4" />,
+  교통: <Car className="w-4 h-4" />,
+  쇼핑: <ShoppingCart className="w-4 h-4" />,
+  "문화/여가": <Clapperboard className="w-4 h-4" />,
+  의료: <Stethoscope className="w-4 h-4" />,
+  교육: <GraduationCap className="w-4 h-4" />,
+  주거: <Home className="w-4 h-4" />,
+  기타: <MoreHorizontal className="w-4 h-4" />,
 };
 
 export default function AddExpensePage() {
@@ -31,17 +53,20 @@ export default function AddExpensePage() {
     getCategoryTotalInMonth,
   } = useExpenseStore();
 
-  const [step, setStep] = useState<'amount' | 'detail'>('amount');
-  const [date, setDate] = useState<Date | null>(null);
-  const [mounted, setMounted] = useState(false);
+  const [step, setStep] = useState<"amount" | "detail">("amount");
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [date, setDate] = useState<Date>(() => new Date());
+  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    setDate(new Date());
-    setMounted(true);
+    requestAnimationFrame(() => {
+      setIsVisible(true);
+    });
   }, []);
-  const [amount, setAmount] = useState('');
-  const [category, setCategory] = useState<Category>('쇼핑');
-  const [memo, setMemo] = useState('');
+
+  const [amount, setAmount] = useState("");
+  const [category, setCategory] = useState<Category>("쇼핑");
+  const [memo, setMemo] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [activeKey, setActiveKey] = useState<string | null>(null);
   const [showCalendar, setShowCalendar] = useState(false);
@@ -52,19 +77,19 @@ export default function AddExpensePage() {
   const [dragOffset, setDragOffset] = useState(0);
 
   const formatAmount = (value: string) => {
-    if (!value) return '0';
-    return parseInt(value, 10).toLocaleString('ko-KR');
+    if (!value) return "0";
+    return parseInt(value, 10).toLocaleString("ko-KR");
   };
 
   const handleKeyPress = (key: string) => {
     setActiveKey(key);
     setTimeout(() => setActiveKey(null), 150);
 
-    if (key === 'delete') {
+    if (key === "delete") {
       setAmount((prev) => prev.slice(0, -1));
-    } else if (key === '000') {
+    } else if (key === "000") {
       if (amount.length > 0 && amount.length <= 9) {
-        setAmount((prev) => prev + '000');
+        setAmount((prev) => prev + "000");
       }
     } else {
       if (amount.length < 12) {
@@ -74,14 +99,30 @@ export default function AddExpensePage() {
   };
 
   const handleAmountComplete = () => {
-    if (!amount || amount === '0') {
+    if (!amount || amount === "0") {
       return;
     }
-    setStep('detail');
+    setIsTransitioning(true);
+    setTimeout(() => {
+      setStep("detail");
+      setTimeout(() => {
+        setIsTransitioning(false);
+      }, 50);
+    }, 300);
+  };
+
+  const handleBackToAmount = () => {
+    setIsTransitioning(true);
+    setTimeout(() => {
+      setStep("amount");
+      setTimeout(() => {
+        setIsTransitioning(false);
+      }, 50);
+    }, 300);
   };
 
   const handleSubmit = async () => {
-    if (!amount || amount === '0' || !date) {
+    if (!amount || amount === "0") {
       return;
     }
 
@@ -90,7 +131,7 @@ export default function AddExpensePage() {
     try {
       const expenseData: Expense = {
         id: generateId(),
-        date: format(date!, 'yyyy-MM-dd'),
+        date: format(date, "yyyy-MM-dd"),
         amount: parseInt(amount, 10),
         category,
         memo,
@@ -102,27 +143,27 @@ export default function AddExpensePage() {
       const totalSpent = monthlyExpenses.reduce((sum, e) => sum + e.amount, 0);
 
       const subCategoryCounts: Record<SubCategory, number> = {
-        '외식': getSubCategoryCountInMonth(currentMonth, '외식'),
-        '커피': getSubCategoryCountInMonth(currentMonth, '커피'),
-        '술': getSubCategoryCountInMonth(currentMonth, '술'),
-        '배달음식': getSubCategoryCountInMonth(currentMonth, '배달음식'),
-        '일반': getSubCategoryCountInMonth(currentMonth, '일반'),
+        외식: getSubCategoryCountInMonth(currentMonth, "외식"),
+        커피: getSubCategoryCountInMonth(currentMonth, "커피"),
+        술: getSubCategoryCountInMonth(currentMonth, "술"),
+        배달음식: getSubCategoryCountInMonth(currentMonth, "배달음식"),
+        일반: getSubCategoryCountInMonth(currentMonth, "일반"),
       };
 
       const categoryTotals: Record<Category, number> = {
-        '식비': getCategoryTotalInMonth(currentMonth, '식비'),
-        '교통': getCategoryTotalInMonth(currentMonth, '교통'),
-        '쇼핑': getCategoryTotalInMonth(currentMonth, '쇼핑'),
-        '문화/여가': getCategoryTotalInMonth(currentMonth, '문화/여가'),
-        '의료': getCategoryTotalInMonth(currentMonth, '의료'),
-        '교육': getCategoryTotalInMonth(currentMonth, '교육'),
-        '주거': getCategoryTotalInMonth(currentMonth, '주거'),
-        '기타': getCategoryTotalInMonth(currentMonth, '기타'),
+        식비: getCategoryTotalInMonth(currentMonth, "식비"),
+        교통: getCategoryTotalInMonth(currentMonth, "교통"),
+        쇼핑: getCategoryTotalInMonth(currentMonth, "쇼핑"),
+        "문화/여가": getCategoryTotalInMonth(currentMonth, "문화/여가"),
+        의료: getCategoryTotalInMonth(currentMonth, "의료"),
+        교육: getCategoryTotalInMonth(currentMonth, "교육"),
+        주거: getCategoryTotalInMonth(currentMonth, "주거"),
+        기타: getCategoryTotalInMonth(currentMonth, "기타"),
       };
 
-      const response = await fetch('/api/analyze', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           expense: expenseData,
           userSettings,
@@ -140,9 +181,12 @@ export default function AddExpensePage() {
       expenseData.subCategory = result.subCategory;
 
       addExpense(expenseData);
-      router.push('/history');
+      setIsVisible(false);
+      setTimeout(() => {
+        router.push("/history");
+      }, 300);
     } catch (error) {
-      console.error('Analysis failed:', error);
+      console.error("Analysis failed:", error);
       setIsAnalyzing(false);
     }
   };
@@ -161,14 +205,14 @@ export default function AddExpensePage() {
   const handleTouchMove = (e: React.TouchEvent) => {
     if (dragStartY.current === null) return;
     const currentY = e.touches[0].clientY;
-    const diff = currentY - dragStartY.current;
+    const diff = dragStartY.current - currentY; // 위로 드래그하면 양수
     if (diff > 0) {
-      setDragOffset(diff);
+      setDragOffset(-diff); // 음수로 위로 이동
     }
   };
 
   const handleTouchEnd = () => {
-    if (dragOffset > 100) {
+    if (dragOffset < -100) { // 위로 100px 이상 드래그하면 닫기
       setShowCalendar(false);
     }
     setDragOffset(0);
@@ -176,28 +220,36 @@ export default function AddExpensePage() {
   };
 
   const handleBack = () => {
-    if (step === 'detail') {
-      setStep('amount');
+    if (step === "detail") {
+      handleBackToAmount();
     } else {
-      router.back();
+      setIsVisible(false);
+      setTimeout(() => {
+        router.back();
+      }, 300);
     }
   };
 
   const keypadButtons = [
-    ['1', '2', '3'],
-    ['4', '5', '6'],
-    ['7', '8', '9'],
-    ['000', '0', 'delete'],
+    ["1", "2", "3"],
+    ["4", "5", "6"],
+    ["7", "8", "9"],
+    ["000", "0", "delete"],
   ];
 
   return (
-    <div className="flex flex-col h-screen bg-background">
-      {/* Header */}
-      <header className="flex items-center px-4 h-14">
-        <button
-          onClick={handleBack}
-          className="p-2 -ml-2 text-foreground"
-        >
+    <div
+      className={`fixed inset-0 flex flex-col bg-background overflow-hidden transition-transform duration-300 ease-out ${
+        isVisible ? "translate-y-0" : "translate-y-full"
+      }`}
+    >
+      {/* Header - 캘린더 열리면 페이드아웃 */}
+      <header
+        className={`flex items-center px-4 h-14 transition-opacity duration-300 ${
+          showCalendar ? "opacity-0" : "opacity-100"
+        }`}
+      >
+        <button onClick={handleBack} className="p-2 -ml-2 text-foreground">
           <ChevronLeft className="w-6 h-6" />
         </button>
         <h1 className="text-lg pixel-font">소비 입력</h1>
@@ -205,8 +257,8 @@ export default function AddExpensePage() {
 
       {/* Date Section */}
       <div className="flex items-center justify-between px-4 py-2">
-        <span className="text-sm text-foreground">
-          {date ? format(date, 'yyyy.MM.dd') : ''}
+        <span className="text-sm text-foreground" suppressHydrationWarning>
+          {format(date, "yyyy.MM.dd")}
         </span>
         <button
           onClick={() => setShowCalendar(true)}
@@ -216,18 +268,53 @@ export default function AddExpensePage() {
         </button>
       </div>
 
-      {step === 'amount' ? (
-        <>
-          {/* Amount Display Section */}
-          <div className="flex-1 flex flex-col items-center justify-center px-4">
-            <p className="text-muted-foreground mb-6 pixel-font">얼마를 쓰셨어요?</p>
-            <div className="text-4xl pixel-number tracking-tight">
+      {/* 메인 컨텐츠 - 캘린더 열리면 페이드아웃 */}
+      <div
+        className={`flex-1 flex flex-col transition-opacity duration-300 overflow-hidden ${
+          showCalendar ? "opacity-0 pointer-events-none" : "opacity-100"
+        }`}
+      >
+        {/* 금액 표시 - 항상 존재하며 위치만 변경 */}
+        <div
+          className={`
+            transition-all duration-300 ease-out
+            ${step === "amount"
+              ? "flex-1 flex flex-col items-center justify-center px-4"
+              : "px-4 py-0"
+            }
+            ${isTransitioning ? "opacity-50" : "opacity-100"}
+          `}
+        >
+          {step === "amount" && (
+            <p className={`text-muted-foreground mb-6 pixel-font transition-opacity duration-200 ${isTransitioning ? "opacity-0" : "opacity-100"}`}>
+              얼마를 쓰셨어요?
+            </p>
+          )}
+
+          {step === "detail" ? (
+            <button
+              onClick={handleBackToAmount}
+              className={`
+                w-full flex items-center justify-between py-4 border-b border-foreground/10
+                transition-all duration-300
+                ${isTransitioning ? "opacity-0 translate-y-4" : "opacity-100 translate-y-0"}
+              `}
+            >
+              <span className="text-sm text-foreground">금액</span>
+              <span className="text-xl pixel-number">
+                {formatAmount(amount)}원
+              </span>
+            </button>
+          ) : (
+            <div className={`text-4xl pixel-number tracking-tight transition-all duration-300 ${isTransitioning ? "opacity-0 -translate-y-8" : "opacity-100 translate-y-0"}`}>
               {formatAmount(amount)}원
             </div>
-          </div>
+          )}
+        </div>
 
-          {/* Keypad Section */}
-          <div className="px-4 pb-4">
+        {step === "amount" ? (
+          /* Keypad Section */
+          <div className={`px-4 pb-4 transition-all duration-300 ${isTransitioning ? "opacity-0 translate-y-8" : "opacity-100 translate-y-0"}`}>
             <div className="grid grid-cols-3 gap-1 mb-4">
               {keypadButtons.flat().map((key) => (
                 <button
@@ -236,18 +323,15 @@ export default function AddExpensePage() {
                   className={`
                     h-16 flex items-center justify-center text-xl
                     transition-colors
-                    ${activeKey === key
-                      ? 'bg-[var(--pixel-lime)] text-[var(--pixel-border)]'
-                      : 'bg-transparent text-foreground'
+                    ${
+                      activeKey === key
+                        ? "bg-[var(--pixel-lime)] text-[var(--pixel-border)]"
+                        : "bg-transparent text-foreground"
                     }
-                    ${key === 'delete' ? '' : 'pixel-font'}
+                    ${key === "delete" ? "" : "pixel-font"}
                   `}
                 >
-                  {key === 'delete' ? (
-                    <Delete className="w-6 h-6" />
-                  ) : (
-                    key
-                  )}
+                  {key === "delete" ? <Delete className="w-6 h-6" /> : key}
                 </button>
               ))}
             </div>
@@ -261,105 +345,116 @@ export default function AddExpensePage() {
               완료
             </Button>
           </div>
-        </>
-      ) : (
-        <>
-          {/* Detail Form */}
-          <div className="flex-1 px-4 py-2">
-            {/* Amount Row */}
-            <button
-              onClick={() => setStep('amount')}
-              className="w-full flex items-center justify-between py-4 border-b border-foreground/10"
-            >
-              <span className="text-sm text-foreground">금액</span>
-              <span className="text-xl pixel-number">{formatAmount(amount)}원</span>
-            </button>
-
-            {/* Category Row */}
-            <div className="flex items-center justify-between py-4 border-b border-foreground/10">
-              <span className="text-sm text-foreground">카테고리</span>
-              <button
-                onClick={() => setShowCategorySelect(!showCategorySelect)}
-                className="flex items-center gap-2 text-foreground"
+        ) : (
+          <>
+            {/* Detail Form */}
+            <div className="flex-1 px-4 py-2 overflow-auto">
+              {/* Category Row */}
+              <div
+                className={`
+                  flex items-center justify-between py-4 border-b border-foreground/10
+                  transition-all duration-300 delay-75
+                  ${isTransitioning ? "opacity-0 translate-y-4" : "opacity-100 translate-y-0"}
+                `}
               >
-                {CATEGORY_ICONS[category]}
-                <span>{category}</span>
-                <ChevronDown className={`w-4 h-4 transition-transform ${showCategorySelect ? 'rotate-180' : ''}`} />
-              </button>
-            </div>
-
-            {/* Category Select Dropdown */}
-            {showCategorySelect && (
-              <div className="py-2 border-b border-foreground/10">
-                <div className="grid grid-cols-4 gap-2">
-                  {CATEGORIES.map((cat) => (
-                    <button
-                      key={cat}
-                      onClick={() => {
-                        setCategory(cat);
-                        setShowCategorySelect(false);
-                      }}
-                      className={`flex flex-col items-center gap-1 p-3 rounded ${
-                        category === cat
-                          ? 'bg-[var(--pixel-lime)] text-[var(--pixel-border)]'
-                          : 'text-foreground'
-                      }`}
-                    >
-                      {CATEGORY_ICONS[cat]}
-                      <span className="text-xs">{cat}</span>
-                    </button>
-                  ))}
-                </div>
+                <span className="text-sm text-foreground">카테고리</span>
+                <button
+                  onClick={() => setShowCategorySelect(!showCategorySelect)}
+                  className="flex items-center gap-2 text-foreground"
+                >
+                  {CATEGORY_ICONS[category]}
+                  <span>{category}</span>
+                  <ChevronDown
+                    className={`w-4 h-4 transition-transform ${showCategorySelect ? "rotate-180" : ""}`}
+                  />
+                </button>
               </div>
-            )}
 
-            {/* Memo Row */}
-            <div className="py-4">
-              <span className="text-sm text-foreground mb-2 block">메모</span>
-              <textarea
-                value={memo}
-                onChange={(e) => setMemo(e.target.value)}
-                placeholder="어떤 소비였나요? (선택)"
-                className="w-full h-32 p-4 bg-card text-card-foreground border-2 border-foreground/20 resize-none text-sm"
-              />
+              {/* Category Select Dropdown */}
+              {showCategorySelect && (
+                <div className="py-2 border-b border-foreground/10">
+                  <div className="grid grid-cols-4 gap-2">
+                    {CATEGORIES.map((cat) => (
+                      <button
+                        key={cat}
+                        onClick={() => {
+                          setCategory(cat);
+                          setShowCategorySelect(false);
+                        }}
+                        className={`flex flex-col items-center gap-1 p-3 rounded ${
+                          category === cat
+                            ? "bg-[var(--pixel-lime)] text-[var(--pixel-border)]"
+                            : "text-foreground"
+                        }`}
+                      >
+                        {CATEGORY_ICONS[cat]}
+                        <span className="text-xs">{cat}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Memo Row */}
+              <div
+                className={`
+                  py-4
+                  transition-all duration-300 delay-150
+                  ${isTransitioning ? "opacity-0 translate-y-4" : "opacity-100 translate-y-0"}
+                `}
+              >
+                <span className="text-sm text-foreground mb-2 block">메모</span>
+                <textarea
+                  value={memo}
+                  onChange={(e) => setMemo(e.target.value)}
+                  placeholder="어떤 소비였나요? (선택)"
+                  className="w-full h-32 p-4 bg-card text-card-foreground border-2 border-foreground/20 resize-none text-sm"
+                />
+              </div>
             </div>
-          </div>
 
-          {/* Submit Button */}
-          <div className="px-4 pb-4">
-            <Button
-              variant="pixel-lime"
-              className="w-full"
-              onClick={handleSubmit}
-              disabled={isAnalyzing}
+            {/* Submit Button */}
+            <div
+              className={`
+                px-4 pb-4
+                transition-all duration-300 delay-200
+                ${isTransitioning ? "opacity-0 translate-y-4" : "opacity-100 translate-y-0"}
+              `}
             >
-              {isAnalyzing ? '판단 중...' : '판단하기'}
-            </Button>
-          </div>
-        </>
-      )}
+              <Button
+                variant="pixel-lime"
+                className="w-full"
+                onClick={handleSubmit}
+                disabled={isAnalyzing}
+              >
+                {isAnalyzing ? "판단 중..." : "판단하기"}
+              </Button>
+            </div>
+          </>
+        )}
+      </div>
 
-      {/* Calendar Slide-down View */}
+      {/* Calendar Expand View - 날짜 섹션 아래에서 펼쳐짐 */}
       <div
         className={`
-          fixed inset-0 bg-background z-50 flex flex-col
-          transition-transform duration-300 ease-out
-          ${showCalendar ? 'translate-y-0' : 'translate-y-full'}
+          absolute left-0 right-0 bg-background z-40 flex flex-col
+          transition-all duration-300 ease-out overflow-hidden
+          ${showCalendar ? "top-[88px] bottom-0 opacity-100" : "top-[88px] bottom-[100%] opacity-0"}
         `}
         style={{
           transform: showCalendar
             ? `translateY(${dragOffset}px)`
-            : 'translateY(100%)',
+            : "translateY(0)",
         }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        {/* Calendar Content - Full Screen */}
+        {/* Calendar Content */}
         <div className="flex-1 flex flex-col items-center justify-center px-4">
           <Calendar
             mode="single"
-            selected={date ?? undefined}
+            selected={date}
             onSelect={handleDateSelect}
             className="w-full max-w-sm bg-transparent calendar-fullscreen"
           />
@@ -371,7 +466,7 @@ export default function AddExpensePage() {
             onClick={() => setShowCalendar(false)}
             className="w-12 h-12 rounded-full border-2 border-foreground/30 flex items-center justify-center text-foreground/60"
           >
-            <ChevronDown className="w-6 h-6" />
+            <ChevronUp className="w-6 h-6" />
           </button>
         </div>
       </div>
