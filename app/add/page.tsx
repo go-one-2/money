@@ -4,17 +4,8 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { useExpenseStore } from "@/lib/store";
-import {
-  type Category,
-  type Expense,
-  type SubCategory,
-  type Verdict,
-} from "@/lib/types";
-import {
-  generateId,
-  getCurrentMonth,
-  getRemainingDaysInMonth,
-} from "@/lib/utils";
+import { type Category, type Expense, type SubCategory, type Verdict } from "@/lib/types";
+import { generateId, getCurrentMonth, getRemainingDaysInMonth } from "@/lib/utils";
 import { format } from "date-fns";
 import {
   AmountInput,
@@ -34,9 +25,7 @@ export default function AddExpensePage() {
     getCategoryTotalInMonth,
   } = useExpenseStore();
 
-  const [step, setStep] = useState<"amount" | "detail" | "loading" | "result">(
-    "amount",
-  );
+  const [step, setStep] = useState<"amount" | "detail" | "loading" | "result">("amount");
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [date, setDate] = useState<Date>(() => new Date());
   const [isVisible, setIsVisible] = useState(false);
@@ -206,42 +195,36 @@ export default function AddExpensePage() {
 
   return (
     <div
-      className={`fixed inset-0 flex flex-col bg-background overflow-hidden transition-transform duration-300 ease-out ${
+      className={`bg-background fixed inset-0 flex flex-col overflow-hidden transition-transform duration-300 ease-out ${
         isVisible ? "translate-y-0" : "translate-y-full"
       }`}
     >
       {/* Header - 캘린더 열리면 페이드아웃 */}
       <header
-        className={`flex items-center px-4 h-14 transition-opacity duration-300 ${
+        className={`flex h-14 items-center px-4 transition-opacity duration-300 ${
           showCalendar ? "opacity-0" : "opacity-100"
         }`}
       >
-        <button onClick={handleBack} className="p-2 -ml-2 text-foreground">
-          <ChevronLeft className="w-6 h-6" />
+        <button onClick={handleBack} className="text-foreground -ml-2 p-2">
+          <ChevronLeft className="h-6 w-6" />
         </button>
-        <h1 className="text-lg pixel-font">소비 입력</h1>
+        <h1 className="pixel-font text-lg">소비 입력</h1>
       </header>
 
       {/* Date Section */}
       <div className="flex items-center justify-between px-4 py-2">
-        <span
-          className="text-sm text-foreground"
-          suppressHydrationWarning={true}
-        >
+        <span className="text-foreground text-sm" suppressHydrationWarning={true}>
           {format(date, "yyyy.MM.dd")}
         </span>
-        <button
-          onClick={() => setShowCalendar(true)}
-          className="text-sm text-muted-foreground"
-        >
+        <button onClick={() => setShowCalendar(true)} className="text-muted-foreground text-sm">
           날짜변경
         </button>
       </div>
 
       {/* 메인 컨텐츠 - 캘린더 열리면 페이드아웃 */}
       <div
-        className={`flex-1 flex flex-col transition-opacity duration-300 overflow-hidden ${
-          showCalendar ? "opacity-0 pointer-events-none" : "opacity-100"
+        className={`flex flex-1 flex-col overflow-hidden transition-opacity duration-300 ${
+          showCalendar ? "pointer-events-none opacity-0" : "opacity-100"
         }`}
       >
         {step === "amount" ? (
