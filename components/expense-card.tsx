@@ -21,10 +21,6 @@ const verdictConfig = {
     label: "유죄!",
     className: "text-destructive",
   },
-  neutral: {
-    label: "참작",
-    className: "text-gray-500",
-  },
 };
 
 export function ExpenseCard({

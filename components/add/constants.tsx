@@ -35,11 +35,6 @@ export const VERDICT_CONFIG: Record<
     color: "text-[var(--pixel-red)]",
     bg: "bg-[var(--pixel-red)]",
   },
-  neutral: {
-    label: "보류",
-    color: "text-[var(--pixel-gray)]",
-    bg: "bg-[var(--pixel-gray)]",
-  },
 };
 
 export const KEYPAD_BUTTONS = [

@@ -35,7 +35,7 @@ export default function AddExpensePage() {
   } = useExpenseStore();
 
   const [step, setStep] = useState<"amount" | "detail" | "loading" | "result">(
-    "amount"
+    "amount",
   );
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [date, setDate] = useState<Date>(() => new Date());
@@ -224,7 +224,10 @@ export default function AddExpensePage() {
 
       {/* Date Section */}
       <div className="flex items-center justify-between px-4 py-2">
-        <span className="text-sm text-foreground" suppressHydrationWarning>
+        <span
+          className="text-sm text-foreground"
+          suppressHydrationWarning={true}
+        >
           {format(date, "yyyy.MM.dd")}
         </span>
         <button

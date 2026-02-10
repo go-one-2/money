@@ -21,11 +21,8 @@ export function useExpenses() {
   );
 
   const stats = useMemo(() => {
-    const goodExpenses = currentMonthExpenses.filter((e) => e.verdict === 'good');
+    const goodExpenses = currentMonthExpenses.filter((e) => e.verdict === 'good' || !e.verdict);
     const badExpenses = currentMonthExpenses.filter((e) => e.verdict === 'bad');
-    const neutralExpenses = currentMonthExpenses.filter(
-      (e) => e.verdict === 'neutral' || !e.verdict
-    );
 
     const totalAmount = currentMonthExpenses.reduce((sum, e) => sum + e.amount, 0);
     const goodAmount = goodExpenses.reduce((sum, e) => sum + e.amount, 0);
@@ -44,7 +41,6 @@ export function useExpenses() {
       totalCount: currentMonthExpenses.length,
       goodCount: goodExpenses.length,
       badCount: badExpenses.length,
-      neutralCount: neutralExpenses.length,
       totalAmount,
       goodAmount,
       badAmount,

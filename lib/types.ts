@@ -16,7 +16,7 @@ export type SubCategory =
   | '배달음식'
   | '일반';
 
-export type Verdict = 'good' | 'bad' | 'neutral';
+export type Verdict = 'good' | 'bad';
 
 export interface Expense {
   id: string;

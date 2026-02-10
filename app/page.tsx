@@ -49,11 +49,8 @@ export default function HomePage() {
         : 0;
 
     const verdictCounts = {
-      good: currentMonthExpenses.filter((e) => e.verdict === "good").length,
+      good: currentMonthExpenses.filter((e) => e.verdict === "good" || !e.verdict).length,
       bad: currentBadExpenses.length,
-      neutral: currentMonthExpenses.filter(
-        (e) => e.verdict === "neutral" || !e.verdict,
-      ).length,
     };
 
     return {
