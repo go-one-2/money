@@ -4,7 +4,7 @@ import { useState, useMemo } from "react";
 import { ChevronDown, LayoutGrid } from "lucide-react";
 import { Header } from "@/components/header";
 import { ExpenseList } from "@/components/expense-list";
-import { ExpenseForm } from "@/components/expense-form";
+import { EditModal } from "@/components/edit-modal";
 import { useExpenseStore } from "@/lib/store";
 import { CATEGORIES, type Category, type Expense } from "@/lib/types";
 import { CATEGORY_ICONS } from "@/components/add/constants";
@@ -146,20 +146,10 @@ export default function HistoryPage() {
       </main>
 
       {editingExpense && (
-        <div className="pixel-dialog-overlay fixed inset-0 z-50 flex items-center justify-center">
-          <div className="pixel-dialog mx-4 w-full max-w-md p-4">
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="pixel-font text-lg font-semibold">소비 수정</h2>
-              <button
-                onClick={() => setEditingExpense(null)}
-                className="text-muted-foreground hover:text-card-foreground text-xl"
-              >
-                ✕
-              </button>
-            </div>
-            <ExpenseForm expense={editingExpense} onSuccess={() => setEditingExpense(null)} />
-          </div>
-        </div>
+        <EditModal
+          expense={editingExpense}
+          onClose={() => setEditingExpense(null)}
+        />
       )}
     </>
   );
