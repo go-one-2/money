@@ -165,8 +165,7 @@
 
 @font-face {
   font-family: "Mulmaru";
-  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/2601-4@1.1/Mulmaru.woff2")
-    format("woff2");
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/2601-4@1.1/Mulmaru.woff2") format("woff2");
   font-weight: normal;
   font-display: swap;
 }
@@ -268,31 +267,15 @@
   width: 60px;
   height: 36px;
   background:
-    radial-gradient(
-      circle at 30% 70%,
-      var(--pixel-card) 12px,
-      transparent 12px
-    ),
-    radial-gradient(
-      circle at 50% 50%,
-      var(--pixel-card) 16px,
-      transparent 16px
-    ),
-    radial-gradient(
-      circle at 70% 70%,
-      var(--pixel-card) 12px,
-      transparent 12px
-    ),
+    radial-gradient(circle at 30% 70%, var(--pixel-card) 12px, transparent 12px),
+    radial-gradient(circle at 50% 50%, var(--pixel-card) 16px, transparent 16px),
+    radial-gradient(circle at 70% 70%, var(--pixel-card) 12px, transparent 12px),
     radial-gradient(circle at 50% 80%, var(--pixel-card) 14px, transparent 14px);
   filter: url("#halftone");
 }
 
 .halftone-pattern {
-  background-image: radial-gradient(
-    circle,
-    var(--pixel-muted) 1px,
-    transparent 1px
-  );
+  background-image: radial-gradient(circle, var(--pixel-muted) 1px, transparent 1px);
   background-size: 4px 4px;
 }
 
@@ -532,7 +515,8 @@
 
 /* 저울 흔들림 애니메이션 */
 @keyframes scale-swing {
-  0%, 100% {
+  0%,
+  100% {
     transform: rotate(-12deg);
   }
   50% {
