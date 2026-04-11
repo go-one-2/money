@@ -111,60 +111,58 @@ function analyzeExpense(
   const strictMode = isStrictMode(priorities);
 
   const reasons: string[] = [];
-  let isBad = false;
-  let violationCount = 0;
+  const relaxed = priorityMatch.matched && !strictMode;
 
-  // 3. 고액 지출: 월 수익의 5% 초과 (우선순위 매칭 시 7%로 완화)
-  const highExpenseRatio = priorityMatch.matched && !strictMode ? 0.07 : 0.05;
+  // 3. 고액 지출 체크
+  // 기본 5% / 우선순위 매칭 시 3%로 완화 / 실용필수 모드 시 강화 없음(5% 유지)
+  const highExpenseRatio = relaxed ? 0.07 : 0.05;
   const highExpenseThreshold = monthlyIncome * highExpenseRatio;
   if (amount > highExpenseThreshold) {
-    violationCount++;
     reasons.push(
       `고액 지출입니다. (월 수입의 ${Math.round(highExpenseRatio * 100)}%인 ${highExpenseThreshold.toLocaleString()}원 초과)`
     );
   }
 
-  // 4. 세부 카테고리 빈도 초과 체크 (실용/필수 모드는 80%로 강화)
+  // 4. 세부 카테고리 빈도 초과 체크
+  // 우선순위 매칭 시 빈도 제한 20% 완화 / 실용필수 모드 시 20% 강화
   if (subCategory !== '일반') {
     const currentCount = subCategoryCounts[subCategory] || 0;
     let limit = SUB_CATEGORY_FREQUENCY_LIMIT[subCategory];
 
-    // 실용/필수 모드는 빈도 제한 강화
-    if (strictMode) {
+    if (relaxed) {
+      limit = Math.ceil(limit * 1.2);
+    } else if (strictMode) {
       limit = Math.floor(limit * 0.8);
     }
 
     if (currentCount >= limit) {
-      violationCount++;
       reasons.push(
         `${subCategory} 빈도 초과입니다. (월 ${limit}회 제한, 현재 ${currentCount + 1}회)`
       );
     }
   }
 
-  // 5. 카테고리별 월 예산 초과 체크 (우선순위 매칭 시 +5% 완화)
+  // 5. 카테고리별 월 예산 초과 체크
+  // 우선순위 매칭 시 +5% 완화 / 실용필수 모드 시 20% 강화
   let budgetRatio = CATEGORY_BUDGET_RATIO[category];
   if (budgetRatio) {
-    // 우선순위 매칭 시 예산 비율 완화
-    if (priorityMatch.matched && !strictMode) {
+    if (relaxed) {
       budgetRatio += 5;
-    }
-    // 실용/필수 모드는 예산 비율 강화
-    if (strictMode) {
+    } else if (strictMode) {
       budgetRatio = Math.floor(budgetRatio * 0.8);
     }
 
     const categoryBudget = monthlyIncome * (budgetRatio / 100);
     const currentCategoryTotal = categoryTotals[category] || 0;
     if (currentCategoryTotal + amount > categoryBudget) {
-      violationCount++;
       reasons.push(
         `${category} 월 예산 초과입니다. (예산: ${categoryBudget.toLocaleString()}원, 현재+이번: ${(currentCategoryTotal + amount).toLocaleString()}원)`
       );
     }
   }
 
-  // 6. 목표 위험: 남은 일수가 7일 이상인데 일일 예산의 3배 초과 (우선순위 매칭 시 4배로 완화)
+  // 6. 저축 목표 위험 체크
+  // 우선순위 매칭 시 4배로 완화 / 기본 3배
   if (remainingDays >= 7) {
     const dailyBudget = calculateDailyBudget(
       monthlyIncome,
@@ -172,38 +170,16 @@ function analyzeExpense(
       totalSpent,
       remainingDays
     );
-    const multiplier = priorityMatch.matched && !strictMode ? 4 : 3;
+    const multiplier = relaxed ? 4 : 3;
     if (dailyBudget > 0 && amount > dailyBudget * multiplier) {
-      violationCount++;
       reasons.push(
         `저축 목표 위험! 일일 예산(${Math.round(dailyBudget).toLocaleString()}원)의 ${multiplier}배를 초과했습니다.`
       );
     }
   }
 
-  // 판정 로직
-  // 우선순위 매칭 + 1개 위반만 있으면 neutral로 완화
-  if (priorityMatch.matched && !strictMode) {
-    if (violationCount === 0) {
-      return {
-        verdict: 'good',
-        reason: `이 소비는 ${category} 카테고리로, ${priorityMatch.reason}`,
-        subCategory,
-      };
-    } else if (violationCount === 1) {
-      return {
-        verdict: 'neutral',
-        reason: `${priorityMatch.reason} 하지만 ${reasons.join(' ')}`,
-        subCategory,
-      };
-    } else {
-      isBad = true;
-    }
-  } else {
-    isBad = violationCount > 0;
-  }
-
-  if (isBad) {
+  // 판정: 위반이 하나라도 있으면 유죄
+  if (reasons.length > 0) {
     return {
       verdict: 'bad',
       reason: reasons.join(' '),
@@ -211,10 +187,11 @@ function analyzeExpense(
     };
   }
 
-  // 괜찮은 소비
   return {
-    verdict: 'neutral',
-    reason: '적정 범위 내의 지출입니다.',
+    verdict: 'good',
+    reason: relaxed
+      ? `이 소비는 ${category} 카테고리로, ${priorityMatch.reason}`
+      : '적정 범위 내의 지출입니다.',
     subCategory,
   };
 }
@@ -230,7 +207,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Analysis error:', error);
     return NextResponse.json(
-      { verdict: 'neutral', reason: '분석 중 오류가 발생했습니다.', subCategory: '일반' },
+      { verdict: 'good', reason: '분석 중 오류가 발생했습니다.', subCategory: '일반' },
       { status: 500 }
     );
   }

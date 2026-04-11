@@ -33,6 +33,7 @@
   --color-secondary: var(--secondary);
   --color-primary-foreground: var(--primary-foreground);
   --color-primary: var(--primary);
+  --color-primary-text: var(--primary-text);
   --color-popover-foreground: var(--popover-foreground);
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
@@ -70,7 +71,8 @@
   --popover: #ffffff;
   --popover-foreground: #0a0a0a;
   --primary: #c8e600;
-  --primary-foreground: #84a900;
+  --primary-foreground: #0a0a0a;
+  --primary-text: #84a900;
   --secondary: #1a1a1a;
   --secondary-foreground: #ffffff;
   --muted: #1a1a1a;
@@ -494,4 +496,50 @@
 /* Pixel Title (for h2, h3 headings in cards) */
 .pixel-title {
   font-family: "DungGeunMo", monospace;
+}
+
+/* Full screen calendar */
+.calendar-fullscreen {
+  --cell-size: 48px;
+}
+
+.calendar-fullscreen [data-slot="calendar"] {
+  width: 100%;
+}
+
+.calendar-fullscreen .rdp-month {
+  width: 100%;
+}
+
+.calendar-fullscreen .rdp-table {
+  width: 100%;
+}
+
+.calendar-fullscreen .rdp-weekday,
+.calendar-fullscreen .rdp-day button {
+  font-family: "DungGeunMo", monospace;
+}
+
+.calendar-fullscreen .rdp-day {
+  height: var(--cell-size);
+}
+
+.calendar-fullscreen .rdp-day button {
+  height: 100%;
+  width: 100%;
+  font-size: 16px;
+}
+
+/* 저울 흔들림 애니메이션 */
+@keyframes scale-swing {
+  0%, 100% {
+    transform: rotate(-12deg);
+  }
+  50% {
+    transform: rotate(12deg);
+  }
+}
+
+.animate-scale-swing {
+  animation: scale-swing 1s ease-in-out infinite;
 }

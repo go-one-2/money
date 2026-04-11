@@ -15,15 +15,11 @@ interface ExpenseCardProps {
 const verdictConfig = {
   good: {
     label: "무죄",
-    className: "text-primary-foreground",
+    className: "text-primary-text",
   },
   bad: {
     label: "유죄!",
     className: "text-destructive",
-  },
-  neutral: {
-    label: "참작",
-    className: "text-gray-500",
   },
 };
 
