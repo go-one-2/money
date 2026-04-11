@@ -48,29 +48,30 @@ export default function HistoryPage() {
     <>
       <Header title="소비 내역" />
 
-      {/* 탭 */}
-      <div className="bg-black">
-        <div className="flex">
-          {VERDICT_TABS.map((tab) => (
-            <button
-              key={tab.value}
-              onClick={() => setVerdictFilter(tab.value)}
-              className={cn(
-                "flex-1 pt-4 pb-2 font-bold transition-colors",
-                verdictFilter === tab.value
-                  ? "text-primary border-primary border-b-2"
-                  : "font-normal text-gray-500",
-              )}
-            >
-              {tab.label}
-            </button>
-          ))}
+      {/* 탭 + 카테고리 필터 (sticky) */}
+      <div className="sticky top-14 z-30 max-w-md mx-auto w-full">
+        {/* 탭 */}
+        <div className="bg-black">
+          <div className="flex">
+            {VERDICT_TABS.map((tab) => (
+              <button
+                key={tab.value}
+                onClick={() => setVerdictFilter(tab.value)}
+                className={cn(
+                  "flex-1 pt-4 pb-2 font-bold transition-colors",
+                  verdictFilter === tab.value
+                    ? "text-primary border-primary border-b-2"
+                    : "font-normal text-gray-500",
+                )}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
 
-      <main className="mx-auto min-h-screen max-w-md bg-white">
         {/* 카테고리 필터 */}
-        <div className="border-b border-gray-100">
+        <div className="bg-white border-b border-gray-100">
           <div className="flex items-center justify-between px-4 py-3">
             <span className="text-sm text-gray-500">카테고리</span>
             <button
@@ -132,16 +133,16 @@ export default function HistoryPage() {
             </div>
           )}
         </div>
+      </div>
 
-        <div className="px-4 py-4">
-          <ExpenseList
-            expenses={filteredExpenses}
-            onDelete={handleDelete}
-            onEdit={(expense) => setEditingExpense(expense)}
-            showActions
-            emptyMessage="소비 내역이 없습니다."
-          />
-        </div>
+      <main className="mx-auto min-h-screen max-w-md bg-white px-4 py-4">
+        <ExpenseList
+          expenses={filteredExpenses}
+          onDelete={handleDelete}
+          onEdit={(expense) => setEditingExpense(expense)}
+          showActions
+          emptyMessage="소비 내역이 없습니다."
+        />
       </main>
 
       {editingExpense && (

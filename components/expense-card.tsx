@@ -27,9 +27,11 @@ export function ExpenseCard({
 }: ExpenseCardProps) {
   const [showReason, setShowReason] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [showLabels, setShowLabels] = useState(false);
 
   const cardRef = useRef<HTMLDivElement>(null);
   const actionsRef = useRef<HTMLDivElement>(null);
+  const labelTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const touchStartX = useRef(0);
   const touchStartY = useRef(0);
   const startOffset = useRef(0);
@@ -57,6 +59,13 @@ export function ExpenseCard({
     if (actionsRef.current) {
       actionsRef.current.style.transition = "width 0.2s ease";
       actionsRef.current.style.width = `${target}px`;
+    }
+    if (labelTimer.current) clearTimeout(labelTimer.current);
+    if (open) {
+      // 스냅 애니메이션(0.2s) 완료 후 라벨 페이드인
+      labelTimer.current = setTimeout(() => setShowLabels(true), 200);
+    } else {
+      setShowLabels(false);
     }
     setIsOpen(open);
   };
@@ -123,18 +132,22 @@ export function ExpenseCard({
         >
           {onEdit && (
             <button
-              className="w-20 shrink-0 bg-gray-200 text-black text-sm font-bold"
+              className="flex-1 bg-gray-200 text-black text-sm font-bold"
               onClick={() => { snapTo(false); onEdit(expense); }}
             >
-              수정
+              <span className={cn("transition-opacity duration-150", showLabels ? "opacity-100" : "opacity-0")}>
+                수정
+              </span>
             </button>
           )}
           {onDelete && (
             <button
-              className="w-20 shrink-0 bg-red-500 text-white text-sm font-bold"
+              className="flex-1 bg-red-500 text-white text-sm font-bold"
               onClick={() => { snapTo(false); onDelete(expense.id); }}
             >
-              삭제
+              <span className={cn("transition-opacity duration-150", showLabels ? "opacity-100" : "opacity-0")}>
+                삭제
+              </span>
             </button>
           )}
         </div>
